@@ -59,6 +59,7 @@
 
 ## 🎨 Contributors
 
+*   **Taha Yasin Aftab** - *CEO*
 *   **Prithwiraj** - *Lead Developer*
 
 ## 📄 License
