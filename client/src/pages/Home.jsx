@@ -6,6 +6,7 @@ import './Home.css';
 import bgVideo from '../assets/background.mp4';
 import Spline from '@splinetool/react-spline';
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
+import { FocusCards } from "../components/ui/focus-cards";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -320,7 +321,20 @@ const Home = () => {
                                 <div className="orbit orbit-1"></div>
                                 <div className="orbit orbit-2"></div>
                                 <div className="orbit orbit-3"></div>
-                                <div className="center-core"></div>
+                                <img
+                                    src="/cartoon.png"
+                                    alt="Ecosystem Center"
+                                    style={{
+                                        width: '95%',
+                                        height: 'auto',
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        zIndex: 10,
+                                        filter: 'drop-shadow(0 0 20px rgba(0, 255, 157, 0.3))'
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>
@@ -384,31 +398,21 @@ const Home = () => {
                         <h2>Master existing Strategies</h2>
                         <button className="link-btn">View all courses <ArrowUpRight size={16} /></button>
                     </div>
-                    <div className="edu-grid">
-                        <motion.div className="edu-card" whileHover={{ scale: 1.02 }}>
-                            <div className="edu-image img-1"></div>
-                            <div className="edu-content">
-                                <span className="cat-tag">BEGINNER</span>
-                                <h4>Crypto Trading 101</h4>
-                                <p>The fundamentals of blockchain and market dynamics.</p>
-                            </div>
-                        </motion.div>
-                        <motion.div className="edu-card" whileHover={{ scale: 1.02 }}>
-                            <div className="edu-image img-2"></div>
-                            <div className="edu-content">
-                                <span className="cat-tag">ADVANCED</span>
-                                <h4>Technical Analysis Masterclass</h4>
-                                <p>Learn to read charts like a pro with our expert guide.</p>
-                            </div>
-                        </motion.div>
-                        <motion.div className="edu-card" whileHover={{ scale: 1.02 }}>
-                            <div className="edu-image img-3"></div>
-                            <div className="edu-content">
-                                <span className="cat-tag">STRATEGY</span>
-                                <h4>Risk Management Systems</h4>
-                                <p>Protect your capital and maximize long-term gains.</p>
-                            </div>
-                        </motion.div>
+                    <div className="edu-grid-wrapper mt-12 w-full flex justify-center">
+                        <FocusCards cards={[
+                            {
+                                title: "Beginner Trading",
+                                description: "Master the basics of stock and forex trading. Understand charts, trends, and risk management to start your profitable journey.",
+                                price: "Rs 15,000/-",
+                                src: "/beginnerCourse.jpg",
+                            },
+                            {
+                                title: "Cryptocurrency",
+                                description: "Explore the world of Blockchain, Bitcoin, and Altcoins. Learn secure wallet management and advanced crypto trading strategies.",
+                                price: "Rs 30,000/-",
+                                src: "/cryptoCourse.jpg",
+                            }
+                        ]} />
                     </div>
                 </div>
             </section>
@@ -427,8 +431,44 @@ const Home = () => {
                         <button className="btn-final-cta" onClick={() => navigate('/auth')}>
                             Create Free Account
                         </button>
+
                     </motion.div>
                 </div>
+            </section>
+
+            {/* --- 7. PLATFORM PREVIEW --- */}
+            <section style={{
+                width: 'calc(100% + 40px)',
+                marginLeft: '-20px',
+                marginRight: '-20px',
+                height: '500px',
+                marginTop: '50px',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                position: 'relative',
+                borderTopLeftRadius: '80px',
+                borderTopRightRadius: '80px',
+                backgroundImage: 'url("/imageBackground.png")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+            }}>
+                <motion.img
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    src="/image1.png"
+                    alt="Platform Preview"
+                    style={{
+                        maxWidth: '90%',
+                        height: 'auto',
+                        maxHeight: '140%', // Pops out the top
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))'
+                    }}
+                />
             </section>
 
         </div>

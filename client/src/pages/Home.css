@@ -922,6 +922,14 @@ body {
     }
 }
 
+.popout-section {
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    margin-right: -20px;
+    position: relative;
+    overflow: hidden;
+}
+
 .popout-wrapper {
     position: relative;
     width: 100%;
