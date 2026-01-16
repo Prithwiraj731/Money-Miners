@@ -321,18 +321,32 @@ const Home = () => {
                                 <div className="orbit orbit-1"></div>
                                 <div className="orbit orbit-2"></div>
                                 <div className="orbit orbit-3"></div>
+                                {/* Soft Base Glow/Shadow */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '70%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    width: '140%',
+                                    height: '40%',
+                                    background: 'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.45) 0%, rgba(0,0,0,0) 70%)',
+                                    zIndex: 5,
+                                    filter: 'blur(15px)',
+                                    pointerEvents: 'none'
+                                }} />
+
                                 <img
                                     src="/cartoon.png"
                                     alt="Ecosystem Center"
                                     style={{
-                                        width: '95%',
+                                        width: '125%',
                                         height: 'auto',
                                         position: 'absolute',
                                         top: '50%',
                                         left: '50%',
                                         transform: 'translate(-50%, -50%)',
-                                        zIndex: 10,
-                                        filter: 'drop-shadow(0 0 20px rgba(0, 255, 157, 0.3))'
+                                        zIndex: 20,
+                                        filter: 'drop-shadow(0 0 45px rgba(16, 185, 129, 0.7)) drop-shadow(0 30px 30px rgba(0, 0, 0, 0.8))'
                                     }}
                                 />
                             </div>
@@ -345,7 +359,7 @@ const Home = () => {
             <section className="section-padding testimonials-section">
                 <div className="container">
                     <motion.div
-                        className="section-header"
+                        className="section-header center"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -394,9 +408,9 @@ const Home = () => {
             {/* --- 5. EDUCATIONAL HUB --- */}
             <section className="section-padding education-section">
                 <div className="container">
-                    <div className="section-header">
-                        <h2>Master existing Strategies</h2>
-                        <button className="link-btn">View all courses <ArrowUpRight size={16} /></button>
+                    <div className="section-header center flex flex-col items-center gap-4">
+                        <h2 className="text-center">Master existing Strategies</h2>
+
                     </div>
                     <div className="edu-grid-wrapper mt-12 w-full flex justify-center">
                         <FocusCards cards={[
@@ -413,6 +427,10 @@ const Home = () => {
                                 src: "/cryptoCourse.jpg",
                             }
                         ]} />
+
+                    </div>
+                    <div className="section-header center flex flex-col items-center gap-4 mt-20">
+                        <button className="link-btn self-center">View all courses <ArrowUpRight size={16} /></button>
                     </div>
                 </div>
             </section>

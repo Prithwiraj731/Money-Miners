@@ -312,7 +312,9 @@ body {
 .hero-right-image-container canvas {
     background: transparent !important;
     /* Brighten, add contrast, and give it a subtle 'pop' glow */
-    filter: brightness(1.3) contrast(1.1) drop-shadow(0 0 30px rgba(124, 58, 237, 0.3)) !important;
+    filter: brightness(1.3) contrast(1.1) drop-shadow(0 0 30px rgba(234, 255, 237, 0.415)) !important;
+    transform: scale(1.25) translateY(8%) !important;
+    transform-origin: center center !important;
 }
 
 .light-mode .hero-right-image-container canvas {
@@ -646,6 +648,25 @@ body {
     background: var(--heading-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: var(--text-color);
+}
+
+.link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.link-btn:hover {
+    color: #10b981;
+    gap: 12px;
 }
 
 .features-grid-3 {
@@ -1328,6 +1349,7 @@ body {
     .globe-circle {
         width: 280px;
         height: 280px;
+        overflow: visible !important;
     }
 
     .cta-box h2 {

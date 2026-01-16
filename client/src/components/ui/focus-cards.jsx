@@ -28,18 +28,18 @@ export const Card = React.memo(
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
             </div>
 
-            <div className="flex-1 flex flex-col p-8 bg-zinc-900 relative z-20">
+            <div className="flex-1 flex flex-col p-6 bg-zinc-900 relative z-20">
 
-                <h3 className="text-2xl font-bold text-white text-left leading-tight mb-4 group-hover:text-emerald-400 transition-colors duration-300">
+                <h3 className="text-2xl font-bold text-white text-left leading-tight mb-3 group-hover:text-emerald-400 transition-colors duration-300">
                     {card.title}
                 </h3>
 
-                <p className="text-zinc-400 text-sm leading-relaxed text-left line-clamp-4 mb-6">
+                <p className="text-zinc-300 text-[15px] leading-relaxed text-left line-clamp-4 mb-6">
                     {card.description}
                 </p>
 
-                <div className="mt-auto pt-5 border-t border-zinc-800 flex flex-row items-center justify-between w-full">
-                    <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
+                <div className="mt-auto pt-4 border-t border-zinc-800 flex flex-row items-center justify-between w-full">
+                    <span className="text-sm font-medium text-zinc-500 uppercase tracking-wider">
                         Course Fee
                     </span>
                     <span className="text-2xl font-bold text-emerald-400">
