@@ -7,18 +7,10 @@ import bgVideo from '../assets/background.mp4';
 import Spline from '@splinetool/react-spline';
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import { FocusCards } from "../components/ui/focus-cards";
+import { LayoutTextFlip } from "../components/ui/layout-text-flip";
 
 const Home = () => {
     const navigate = useNavigate();
-    const [currentWord, setCurrentWord] = useState(0);
-    const words = ["TRADING", "INVESTING", "PROFITS"];
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentWord((prev) => (prev + 1) % words.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <div className="home-page">
@@ -55,17 +47,7 @@ const Home = () => {
                         MASTER THE <br />
                         FUTURE OF <br />
                         <span className="anim-text">
-                            <AnimatePresence mode="wait">
-                                <motion.span
-                                    key={words[currentWord]}
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -20, opacity: 0 }}
-                                    transition={{ duration: 0.4 }}
-                                >
-                                    {words[currentWord]}
-                                </motion.span>
-                            </AnimatePresence>
+                            <LayoutTextFlip text="" words={["TRADING", "INVESTING", "PROFITS"]} />
                         </span>
                     </motion.h1>
 
@@ -429,9 +411,27 @@ const Home = () => {
                         ]} />
 
                     </div>
+                    <br></br>
+                    <br></br>
                     <div className="section-header center flex flex-col items-center gap-4 mt-20">
                         <button className="link-btn self-center">View all courses <ArrowUpRight size={16} /></button>
                     </div>
+                </div>
+            </section>
+
+            {/* --- EXCLUSIVE ACCESS SECTION --- */}
+            <section className="exclusive-section">
+                <div className="exclusive-content">
+                    <motion.button
+                        className="btn-exclusive"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/auth')}
+                    >
+                        <span className="btn-text">Join the Exclusive</span>
+                        <div className="btn-glow"></div>
+                        <Zap size={20} className="btn-icon" />
+                    </motion.button>
                 </div>
             </section>
 
