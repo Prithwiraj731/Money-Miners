@@ -5,7 +5,7 @@ export const coursesData = [
         price: 7000,
         duration: '6 Weeks',
         level: 'Beginner',
-        thumbnail: '/basic_of_trading.png',
+        thumbnail: '/basic_of_trading.webp',
         shortDesc: 'Master the fundamentals of trading from scratch',
         description: 'Learn the essential skills needed to start your trading journey. This comprehensive course covers market fundamentals, chart reading, and risk management strategies.',
         modules: [
@@ -59,7 +59,7 @@ export const coursesData = [
         price: 8000,
         duration: '8 Weeks',
         level: 'Intermediate',
-        thumbnail: '/btc_master.png',
+        thumbnail: '/btc_master.webp',
         shortDesc: 'Become a Bitcoin trading expert',
         description: 'Deep dive into Bitcoin trading strategies, blockchain fundamentals, and advanced technical analysis specific to cryptocurrency markets.',
         modules: [
@@ -122,7 +122,7 @@ export const coursesData = [
         price: 8000,
         duration: '10 Weeks',
         level: 'All Levels',
-        thumbnail: '/crypto_market.png',
+        thumbnail: '/crypto_market.webp',
         shortDesc: 'Complete cryptocurrency trading mastery',
         description: 'From fundamental concepts to advanced DeFi strategies, this comprehensive course covers the entire cryptocurrency ecosystem and trading methodologies.',
         modules: [
@@ -194,7 +194,7 @@ export const coursesData = [
         price: 10000,
         duration: '12 Weeks',
         level: 'Advanced',
-        thumbnail: '/gold_digger.png',
+        thumbnail: '/gold_digger.webp',
         shortDesc: 'Elite momentum trading strategies',
         description: 'Premium course teaching institutional-grade momentum trading strategies, high-frequency techniques, and advanced market microstructure analysis.',
         modules: [
