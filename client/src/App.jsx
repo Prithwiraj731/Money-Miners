@@ -12,6 +12,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import './index.css';
 
 import Dashboard from './pages/Dashboard';
+import ExclusiveChannel from './pages/ExclusiveChannel';
+import CoursePage from './pages/CoursePage';
 
 function Layout() {
   const location = useLocation();
@@ -28,6 +30,8 @@ function Layout() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/surprise" element={<Surprise />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/exclusive" element={<ExclusiveChannel />} />
+        <Route path="/courses/:courseId" element={<CoursePage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

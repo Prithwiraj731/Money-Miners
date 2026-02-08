@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, Instagram, Twitter, Facebook, Play, Zap, Shield, Globe, BarChart2 } from 'lucide-react';
+import { ArrowUpRight, Instagram, Twitter, Facebook, Play, Zap, Shield, Globe, BarChart2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Home.css';
 import bgVideo from '../assets/background.mp4';
@@ -8,6 +8,7 @@ import Spline from '@splinetool/react-spline';
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import { FocusCards } from "../components/ui/focus-cards";
 import { LayoutTextFlip } from "../components/ui/layout-text-flip";
+import { coursesData } from '../data/coursesData';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -307,7 +308,7 @@ const Home = () => {
                                 <div style={{
                                     position: 'absolute',
                                     top: '70%',
-                                    left: '50%',
+                                    left: '42%',
                                     transform: 'translate(-50%, -50%)',
                                     width: '140%',
                                     height: '40%',
@@ -387,34 +388,169 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* --- 5. EDUCATIONAL HUB --- */}
-            <section className="section-padding education-section">
+            {/* --- 4.5 INVESTMENT PLANS --- */}
+            <section className="section-padding investment-section">
                 <div className="container">
-                    <div className="section-header center flex flex-col items-center gap-4">
-                        <h2 className="text-center">Master existing Strategies</h2>
+                    <motion.div
+                        className="section-header center"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <span className="sub-tag">GROW YOUR WEALTH</span>
+                        <h2>Investment Plans</h2>
+                        <p>Choose the strategy that fits your financial goals.</p>
+                    </motion.div>
 
-                    </div>
-                    <div className="edu-grid-wrapper mt-12 w-full flex justify-center">
-                        <FocusCards cards={[
-                            {
-                                title: "Beginner Trading",
-                                description: "Master the basics of stock and forex trading. Understand charts, trends, and risk management to start your profitable journey.",
-                                price: "Rs 15,000/-",
-                                src: "/beginnerCourse.jpg",
-                            },
-                            {
-                                title: "Cryptocurrency",
-                                description: "Explore the world of Blockchain, Bitcoin, and Altcoins. Learn secure wallet management and advanced crypto trading strategies.",
-                                price: "Rs 30,000/-",
-                                src: "/cryptoCourse.jpg",
-                            }
-                        ]} />
+                    <div className="investment-grid">
+                        {/* Plan 1: Monthly */}
+                        <motion.div
+                            className="plan-card"
+                            whileHover={{ y: -10 }}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <div className="plan-header">
+                                <h3>Monthly Plan</h3>
+                                <div className="plan-roi">6-8% <span className="period">/month</span></div>
+                            </div>
+                            <div className="plan-body">
+                                <div className="plan-detail">
+                                    <span className="label">Min Investment</span>
+                                    <span className="value">₹1,00,000</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Tenure</span>
+                                    <span className="value">8 Months</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Returns</span>
+                                    <span className="value highlight">6-8% Monthly</span>
+                                </div>
+                            </div>
+                        </motion.div>
 
+                        {/* Plan 2: Almost Double (Featured) */}
+                        <motion.div
+                            className="plan-card featured"
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <div className="popular-badge">MOST POPULAR</div>
+                            <div className="plan-header">
+                                <h3>Almost Double</h3>
+                                <div className="plan-roi">95-99% <span className="period">/total</span></div>
+                            </div>
+                            <div className="plan-body">
+                                <div className="plan-detail">
+                                    <span className="label">Min Investment</span>
+                                    <span className="value">₹1,00,000</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Tenure</span>
+                                    <span className="value">8 Months</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Returns</span>
+                                    <span className="value highlight">95-99% Total</span>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Plan 3: 4 Months */}
+                        <motion.div
+                            className="plan-card"
+                            whileHover={{ y: -10 }}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <div className="plan-header">
+                                <h3>Short Term</h3>
+                                <div className="plan-roi">45-50% <span className="period">/total</span></div>
+                            </div>
+                            <div className="plan-body">
+                                <div className="plan-detail">
+                                    <span className="label">Min Investment</span>
+                                    <span className="value">₹1,00,000</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Tenure</span>
+                                    <span className="value">4 Months</span>
+                                </div>
+                                <div className="plan-detail">
+                                    <span className="label">Returns</span>
+                                    <span className="value highlight">45-50% Total</span>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
-                    <br></br>
-                    <br></br>
-                    <div className="section-header center flex flex-col items-center gap-4 mt-20">
-                        <button className="link-btn self-center">View all courses <ArrowUpRight size={16} /></button>
+
+                    <div className="section-footer center" style={{ marginTop: '60px' }}>
+                        <motion.button
+                            className="btn-primary-glow"
+                            onClick={() => navigate('/contact')}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            Contact Us to Invest <ArrowUpRight size={18} />
+                        </motion.button>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 5. COURSES SECTION --- */}
+            <section className="section-padding courses-section">
+                <div className="container">
+                    <motion.div
+                        className="section-header center"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <span className="sub-tag">LEVEL UP YOUR SKILLS</span>
+                        <h2>Trading Courses</h2>
+                        <p>Comprehensive courses designed to transform you into a professional trader</p>
+                    </motion.div>
+
+                    <div className="courses-grid">
+                        {coursesData.map((course, index) => (
+                            <motion.div
+                                key={course.id}
+                                className="course-card"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ y: -10 }}
+                                onClick={() => navigate(`/courses/${course.id}`)}
+                            >
+                                <div className="course-image">
+                                    <img src={course.thumbnail} alt={course.title} />
+                                    <div className="course-overlay">
+                                        <span className="view-course">View Course →</span>
+                                    </div>
+                                </div>
+                                <div className="course-content">
+                                    <div className="course-badge">{course.level}</div>
+                                    <h3>{course.title}</h3>
+                                    <p>{course.shortDesc}</p>
+                                    <div className="course-footer">
+                                        <div className="course-price">₹{course.price.toLocaleString()}</div>
+                                        <div className="course-duration">
+                                            <Clock size={16} />
+                                            {course.duration}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -426,7 +562,7 @@ const Home = () => {
                         className="btn-exclusive"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => navigate('/auth')}
+                        onClick={() => navigate('/exclusive')}
                     >
                         <span className="btn-text">Join the Exclusive</span>
                         <div className="btn-glow"></div>

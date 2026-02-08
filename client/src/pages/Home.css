@@ -649,6 +649,15 @@ body {
     background: var(--heading-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: var(--text-color);
+    background-clip: text;
+}
+
+.anim-text .layout-text-flip {
+    background: linear-gradient(to right, #fff, #999);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
 }
 
 .link-btn {
@@ -781,10 +790,26 @@ body {
 .orbit {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 42%;
+    /* Adjusted left to align with cartoon */
     transform: translate(-50%, -50%);
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ... existing code ... */
+
+.center-core {
+    position: absolute;
+    top: 50%;
+    left: 42%;
+    /* Match orbit shift */
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: var(--text-color);
+    border-radius: 50%;
+    box-shadow: var(--globe-core-shadow);
 }
 
 .orbit-1 {
@@ -1516,4 +1541,272 @@ body {
 
 .btn-exclusive:hover .btn-icon {
     transform: rotate(45deg);
+}
+
+/* --- INVESTMENT PLANS --- */
+.investment-section {
+    position: relative;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05), transparent 60%);
+}
+
+.investment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.plan-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card.featured {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1);
+}
+
+.popular-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #10B981;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.plan-header {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.plan-header h3 {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.plan-roi {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+
+.plan-roi .period {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.plan-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.plan-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.plan-detail .label {
+    color: var(--text-secondary);
+}
+
+.plan-detail .value {
+    color: #fff;
+    font-weight: 600;
+}
+
+.plan-detail .value.highlight {
+    color: #10B981;
+}
+
+.btn-primary-glow {
+    background: #10B981;
+    color: #000;
+    border: none;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 100px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-primary-glow:hover {
+    background: #059669;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    transform: translateY(-2px);
+}
+
+.section-footer.center {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ==================== COURSES SECTION ==================== */
+.courses-section {
+    position: relative;
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent 70%);
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.course-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px);
+}
+
+.course-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.course-card:hover .course-image img {
+    transform: scale(1.1);
+}
+
+.course-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.course-card:hover .course-overlay {
+    opacity: 1;
+}
+
+.view-course {
+    color: #10B981;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.course-content {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.course-badge {
+    display: inline-block;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: fit-content;
+    margin-bottom: 15px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.course-content h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.course-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.course-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #FFD700;
+}
+
+.course-duration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.course-duration svg {
+    color: #10B981;
+}
+
+@media (max-width: 900px) {
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
 }
