@@ -20,7 +20,7 @@ exports.submitContactForm = async (req, res) => {
             query
         });
 
-        // 2. Send Email
+        // 2. Send Emails
         // Only attempt to send email if credentials are present to avoid crashing validation
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const transporter = nodemailer.createTransport({
@@ -31,7 +31,8 @@ exports.submitContactForm = async (req, res) => {
                 }
             });
 
-            const mailOptions = {
+            // Admin notification email
+            const adminMailOptions = {
                 from: process.env.EMAIL_USER,
                 to: 'tyaseen500@gmail.com',
                 subject: `New Contact Query from ${full_name}`,
@@ -48,12 +49,75 @@ exports.submitContactForm = async (req, res) => {
                 `
             };
 
-            await transporter.sendMail(mailOptions);
+            // User confirmation email
+            const userMailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: '✅ Thank You for Contacting Money Miners',
+                html: `
+                    <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
+                        <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 40px; text-align: center;">
+                            <h1 style="margin: 0; font-size: 32px; color: #000; font-weight: 800;">Thank You, ${full_name}!</h1>
+                            <p style="margin: 10px 0 0 0; color: #000; font-size: 16px; opacity: 0.9;">We've received your message</p>
+                        </div>
+                        
+                        <div style="padding: 40px 30px;">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; width: 80px; height: 80px; line-height: 80px; font-size: 40px;">✓</div>
+                            </div>
+                            
+                            <h2 style="color: #10B981; text-align: center; margin-bottom: 20px;">Your Message Has Been Received</h2>
+                            
+                            <p style="color: #ddd; line-height: 1.8; text-align: center; font-size: 16px;">
+                                Thank you for reaching out to Money Miners. We appreciate your interest!
+                            </p>
+                            
+                            <div style="background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                                <h3 style="margin: 0 0 10px 0; color: #FFD700; font-size: 18px;">What Happens Next?</h3>
+                                <ul style="color: #ddd; line-height: 1.8; margin: 10px 0; padding-left: 20px;">
+                                    <li>Our team will review your query within 24 hours</li>
+                                    <li>We'll contact you via email or phone with a response</li>
+                                    <li>You'll receive expert guidance tailored to your needs</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+                                <h3 style="color: #10B981; margin-top: 0;">Your Message</h3>
+                                <p style="color: #ddd; line-height: 1.6; margin: 0; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">${query}</p>
+                            </div>
+                            
+                            <div style="text-align: center; margin-top: 35px;">
+                                <p style="color: #aaa; font-size: 14px; margin: 0 0 15px 0;">Need immediate assistance?</p>
+                                <p style="margin: 5px 0;">
+                                    <a href="mailto:tyaseen500@gmail.com" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 tyaseen500@gmail.com</a>
+                                </p>
+                                <p style="margin: 5px 0;">
+                                    <a href="tel:+917667307696" style="color: #10B981; text-decoration: none; font-weight: 600;">📱 +91 76673 07696</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(0, 0, 0, 0.3); padding: 25px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <p style="margin: 0 0 10px 0; color: #10B981; font-size: 20px; font-weight: 700;">Money Miners</p>
+                            <p style="margin: 0; color: #888; font-size: 13px;">Your trusted partner in trading education and investment</p>
+                            <div style="margin-top: 15px;">
+                                <p style="margin: 0; color: #666; font-size: 12px;">This is an automated confirmation email. Please do not reply.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+
+            // Send both emails
+            await Promise.all([
+                transporter.sendMail(adminMailOptions),
+                transporter.sendMail(userMailOptions)
+            ]);
         } else {
             console.warn('Email credentials not found in .env. Email not sent.');
         }
 
-        res.status(201).json({ message: 'Query submitted successfully!', contact: newContact });
+        res.status(201).json({ message: 'Query submitted successfully! Check your email for confirmation.', contact: newContact });
     } catch (error) {
         console.error('Contact submission error:', error);
         res.status(500).json({ error: 'Failed to submit query. Please try again.' });
@@ -68,44 +132,157 @@ exports.sendExclusiveInquiry = async (req, res) => {
             return res.status(400).json({ error: 'Please fill all required fields.' });
         }
 
-        // Send Email to Admin
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                }
-            });
-
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: 'tyaseen500@gmail.com', // Admin Email
-                subject: `💎 EXCLUSIVE CHANNEL INQUIRY: ${plan} Plan`,
-                html: `
-                    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                        <h2 style="color: #10B981;">New Exclusive Channel Inquiry</h2>
-                        <p><strong>Selected Plan:</strong> <span style="font-size: 1.2em; color: #d4af37;">${plan}</span></p>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-                        <p><strong>Name:</strong> ${name}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Phone:</strong> ${phone}</p>
-                        <br/>
-                        <h3>User Query:</h3>
-                        <p style="background: #f9f9f9; padding: 15px; border-left: 4px solid #10B981;">${query || 'No specific query provided.'}</p>
-                    </div>
-                `
-            };
-
-            await transporter.sendMail(mailOptions);
-            return res.status(200).json({ message: 'Inquiry sent successfully!' });
-        } else {
+        // Check if email credentials are available
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
             console.warn('Email credentials missing.');
             return res.status(500).json({ error: 'Server misconfiguration: Email credentials missing.' });
         }
 
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // 1. Send Email to Admin
+        const adminMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'tyaseen500@gmail.com',
+            subject: `💎 EXCLUSIVE CHANNEL INQUIRY: ${plan} Plan`,
+            html: `
+                <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
+                    <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 28px; color: #000;">💎 New Exclusive Inquiry</h1>
+                    </div>
+                    
+                    <div style="padding: 40px 30px;">
+                        <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
+                            <h2 style="margin: 0 0 10px 0; color: #FFD700; font-size: 24px;">Selected Plan: ${plan}</h2>
+                        </div>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                            <h3 style="color: #10B981; margin-top: 0;">Contact Information</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 12px 0; color: #aaa; width: 120px;"><strong>Name:</strong></td>
+                                    <td style="padding: 12px 0; color: #fff;">${name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #aaa;"><strong>Email:</strong></td>
+                                    <td style="padding: 12px 0; color: #fff;">${email}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; color: #aaa;"><strong>Phone:</strong></td>
+                                    <td style="padding: 12px 0; color: #fff;">${phone}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        ${query ? `
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px;">
+                            <h3 style="color: #10B981; margin-top: 0;">User Query</h3>
+                            <p style="color: #ddd; line-height: 1.6; margin: 0;">${query}</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+                            <p style="color: #aaa; font-size: 14px; margin: 0;">Respond to this inquiry as soon as possible to maintain customer engagement.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; text-align: center;">
+                        <p style="margin: 0; color: #888; font-size: 13px;">Money Miners - Exclusive Channel Management System</p>
+                    </div>
+                </div>
+            `
+        };
+
+        // 2. Send Beautiful Confirmation Email to User
+        const userMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: '✅ Thank You for Your Interest in Money Miners Exclusive Channel',
+            html: `
+                <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
+                    <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 40px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 32px; color: #000; font-weight: 800;">Thank You, ${name}!</h1>
+                        <p style="margin: 10px 0 0 0; color: #000; font-size: 16px; opacity: 0.9;">We've received your inquiry</p>
+                    </div>
+                    
+                    <div style="padding: 40px 30px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 2px solid #10B981; border-radius: 50%; width: 80px; height: 80px; line-height: 80px; font-size: 40px;">✓</div>
+                        </div>
+                        
+                        <h2 style="color: #10B981; text-align: center; margin-bottom: 20px;">Your Inquiry Has Been Submitted</h2>
+                        
+                        <p style="color: #ddd; line-height: 1.8; text-align: center; font-size: 16px;">
+                            Thank you for your interest in our <strong style="color: #FFD700;">${plan}</strong> exclusive channel plan.
+                        </p>
+                        
+                        <div style="background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                            <h3 style="margin: 0 0 10px 0; color: #FFD700; font-size: 18px;">What Happens Next?</h3>
+                            <ul style="color: #ddd; line-height: 1.8; margin: 10px 0; padding-left: 20px;">
+                                <li>Our team will review your inquiry within 24 hours</li>
+                                <li>We'll contact you via email or phone to discuss the plan details</li>
+                                <li>You'll receive personalized investment strategies tailored to your goals</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+                            <h3 style="color: #10B981; margin-top: 0;">Your Submission Details</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 10px 0; color: #aaa; width: 140px;">Selected Plan:</td>
+                                    <td style="padding: 10px 0; color: #FFD700; font-weight: bold;">${plan}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; color: #aaa;">Contact Email:</td>
+                                    <td style="padding: 10px 0; color: #fff;">${email}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; color: #aaa;">Contact Phone:</td>
+                                    <td style="padding: 10px 0; color: #fff;">${phone}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 35px;">
+                            <p style="color: #aaa; font-size: 14px; margin: 0 0 15px 0;">Need immediate assistance?</p>
+                            <p style="margin: 5px 0;">
+                                <a href="mailto:tyaseen500@gmail.com" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 tyaseen500@gmail.com</a>
+                            </p>
+                            <p style="margin: 5px 0;">
+                                <a href="tel:+917667307696" style="color: #10B981; text-decoration: none; font-weight: 600;">📱 +91 76673 07696</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 25px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <p style="margin: 0 0 10px 0; color: #10B981; font-size: 20px; font-weight: 700;">Money Miners</p>
+                        <p style="margin: 0; color: #888; font-size: 13px;">Your trusted partner in trading education and investment</p>
+                        <div style="margin-top: 15px;">
+                            <p style="margin: 0; color: #666; font-size: 12px;">This is an automated confirmation email. Please do not reply.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        // Send both emails
+        await Promise.all([
+            transporter.sendMail(adminMailOptions),
+            transporter.sendMail(userMailOptions)
+        ]);
+
+        return res.status(200).json({
+            message: 'Inquiry sent successfully! Check your email for confirmation.'
+        });
+
     } catch (error) {
         console.error('Exclusive inquiry error:', error);
-        return res.status(500).json({ error: 'Failed to send inquiry.' });
+        return res.status(500).json({ error: 'Failed to send inquiry. Please try again.' });
     }
 };

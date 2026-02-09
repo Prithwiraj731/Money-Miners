@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, ArrowLeft, Clock, BarChart3, BookOpen, Award } from 'lucide-react';
+import { Check, ArrowLeft, Clock, BarChart3, BookOpen, Award, ShoppingCart } from 'lucide-react';
 import { coursesData } from '../data/coursesData';
 import './CoursePage.css';
 
@@ -9,6 +9,53 @@ const CoursePage = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
     const course = coursesData.find(c => c.id === courseId);
+
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ text: '', type: '' });
+    const [inCart, setInCart] = useState(false);
+
+    // Check if user is logged in
+    const isLoggedIn = !!localStorage.getItem('token');
+
+    // Add to cart function
+    const handleAddToCart = async () => {
+        if (!isLoggedIn) {
+            setMessage({ text: 'Please login to add courses to cart', type: 'error' });
+            setTimeout(() => navigate('/auth'), 2000);
+            return;
+        }
+
+        setLoading(true);
+        setMessage({ text: '', type: '' });
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ courseId: course.id })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to add to cart');
+            }
+
+            setMessage({ text: 'Course added to cart!', type: 'success' });
+            setInCart(true);
+            setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+
+        } catch (error) {
+            setMessage({ text: error.message, type: 'error' });
+            setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (!course) {
         return (
@@ -65,15 +112,38 @@ const CoursePage = () => {
                                     <span className="price-label">Course Fee</span>
                                     <span className="price-value">₹{course.price.toLocaleString()}</span>
                                 </div>
-                                <motion.button
-                                    className="btn-enroll"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => navigate('/contact')}
-                                >
-                                    Enroll Now
-                                </motion.button>
+                                <div className="course-action-buttons">
+                                    <motion.button
+                                        className="btn-enroll"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => navigate('/contact')}
+                                    >
+                                        Enroll Now
+                                    </motion.button>
+                                    <motion.button
+                                        className={`btn-cart ${inCart ? 'in-cart' : ''}`}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={handleAddToCart}
+                                        disabled={loading || inCart}
+                                    >
+                                        <ShoppingCart size={20} />
+                                        {loading ? 'Adding...' : inCart ? 'In Cart' : 'Add to Cart'}
+                                    </motion.button>
+                                </div>
                             </div>
+
+                            {message.text && (
+                                <motion.div
+                                    className={`course-message ${message.type}`}
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    {message.text}
+                                </motion.div>
+                            )}
                         </motion.div>
 
                         <motion.div

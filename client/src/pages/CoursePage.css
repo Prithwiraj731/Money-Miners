@@ -120,6 +120,12 @@
     color: #FFD700;
 }
 
+.course-action-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
 .btn-enroll {
     padding: 18px 36px;
     background: #10B981;
@@ -137,6 +143,58 @@
     background: #059669;
     box-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
     transform: translateY(-2px);
+}
+
+.btn-cart {
+    padding: 18px 36px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 2px solid #10B981;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-cart:hover:not(:disabled) {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #059669;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-cart:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-cart.in-cart {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10B981;
+}
+
+.course-message {
+    margin-top: 20px;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.course-message.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.course-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .course-image-wrapper {
