@@ -74,16 +74,15 @@ const Footer = () => {
                     <div className="footer-column">
                         <h3>Resources</h3>
                         <ul>
-                            <li><Link to="/about">How it works</Link></li>
+                            <li><Link to="/about">About Us</Link></li>
                             <li><Link to="/#courses">Courses</Link></li>
-                            <li><Link to="/about">Our Team</Link></li>
-                            <li><Link to="/faq">FAQ</Link></li>
-                            <li><Link to="/blog">Blog</Link></li>
+                            <li><Link to="#">FAQ</Link></li>
+                            <li><Link to="#">Blog</Link></li>
                         </ul>
                     </div>
 
                     {/* For Traders Column */}
-                    <div className="footer-column">
+                    {/* <div className="footer-column">
                         <h3>For Traders</h3>
                         <ul>
                             <li><Link to="/market-analysis">Market Analysis</Link></li>
@@ -92,7 +91,7 @@ const Footer = () => {
                             <li><Link to="/success-stories">Success Stories</Link></li>
                             <li><Link to="/community">Community</Link></li>
                         </ul>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Bottom Section */}

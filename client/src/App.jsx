@@ -14,6 +14,10 @@ import './index.css';
 import Dashboard from './pages/Dashboard';
 import ExclusiveChannel from './pages/ExclusiveChannel';
 import CoursePage from './pages/CoursePage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
+import RefundPolicy from './pages/RefundPolicy';
 
 function Layout() {
   const location = useLocation();
@@ -32,6 +36,12 @@ function Layout() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/exclusive" element={<ExclusiveChannel />} />
         <Route path="/courses/:courseId" element={<CoursePage />} />
+
+        {/* Legal Pages */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="/refund" element={<RefundPolicy />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
