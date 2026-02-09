@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Lock, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
+import API_URL from '../config/api';
 import './Auth.css';
 
 const Auth = () => {
@@ -42,7 +43,7 @@ const Auth = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/send-otp', {
+            const response = await fetch(`${API_URL}/api/auth/send-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: formData.email })
@@ -82,7 +83,7 @@ const Auth = () => {
         setLoading(true);
 
         const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-        const url = `http://localhost:5000${endpoint}`;
+        const url = `${API_URL}${endpoint}`;
 
         try {
             const payload = isLogin

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, ArrowLeft, Clock, BarChart3, BookOpen, Award, ShoppingCart } from 'lucide-react';
 import { coursesData } from '../data/coursesData';
+import API_URL from '../config/api';
 import './CoursePage.css';
 
 const CoursePage = () => {
@@ -30,7 +31,7 @@ const CoursePage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/cart/add', {
+            const response = await fetch(`${API_URL}/api/cart/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

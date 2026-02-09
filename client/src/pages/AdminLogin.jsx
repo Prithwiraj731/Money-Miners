@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, ShieldCheck, Server } from 'lucide-react';
 import { motion } from 'framer-motion';
+import API_URL from '../config/api';
 import './Admin.css';
 
 const AdminLogin = () => {
@@ -16,7 +17,7 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/admin/login', {
+            const response = await fetch(`${API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials)

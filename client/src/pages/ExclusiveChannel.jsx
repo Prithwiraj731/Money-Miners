@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Check, X, Loader } from 'lucide-react';
-import './ExclusiveChannel.css';
 import axios from 'axios';
+import API_URL from '../config/api';
+import './ExclusiveChannel.css';
 
 const ExclusiveChannel = () => {
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -69,7 +70,7 @@ const ExclusiveChannel = () => {
         setStatus({ type: '', message: '' });
 
         try {
-            const response = await axios.post('http://localhost:5000/api/contact/exclusive-inquiry', {
+            const response = await axios.post(`${API_URL}/api/contact/exclusive-inquiry`, {
                 ...formData,
                 plan: selectedPlan.title
             });

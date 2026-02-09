@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Trash2, Clock, BarChart3, LogOut } from 'lucide-react';
 import { coursesData } from '../data/coursesData';
+import API_URL from '../config/api';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -31,7 +32,7 @@ const Dashboard = () => {
 
     const fetchCart = async (token) => {
         try {
-            const response = await fetch('http://localhost:5000/api/cart', {
+            const response = await fetch(`${API_URL}/api/cart`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -51,7 +52,7 @@ const Dashboard = () => {
     const handleRemoveFromCart = async (courseId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/cart/${courseId}`, {
+            const response = await fetch(`${API_URL}/api/cart/${courseId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
