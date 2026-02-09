@@ -71,7 +71,8 @@ body {
 }
 
 .frame-bg-image img,
-.bg-video {
+.bg-video,
+.bg-image {
     width: 100%;
     height: 100%;
     object-fit: cover;

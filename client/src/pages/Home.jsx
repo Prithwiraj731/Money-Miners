@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Instagram, Twitter, Facebook, Play, Zap, Shield, Globe, BarChart2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Home.css';
-import bgVideo from '../assets/background.mp4';
+import bgImage from '../assets/background.jpg';
 import Spline from '@splinetool/react-spline';
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import { FocusCards } from "../components/ui/focus-cards";
@@ -27,13 +27,10 @@ const Home = () => {
             >
                 {/* Background Image within the Frame */}
                 <div className="frame-bg-image">
-                    <video
-                        src={bgVideo}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="bg-video"
+                    <img
+                        src={bgImage}
+                        alt="Money Miners Background"
+                        className="bg-image"
                     />
                     <div className="frame-overlay"></div>
                 </div>
