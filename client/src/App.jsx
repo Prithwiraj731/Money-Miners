@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import Analytics from './components/Analytics';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Home from './pages/Home';
@@ -28,6 +29,7 @@ function Layout() {
   return (
     <>
       <ScrollToTop />
+      <Analytics />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
