@@ -121,7 +121,7 @@ const PrivacyPolicy = () => {
                             <li><strong>Data Portability:</strong> Request a portable copy of your data in a structured format</li>
                             <li><strong>Withdraw Consent:</strong> Withdraw consent for data processing where applicable</li>
                         </ul>
-                        <p>To exercise these rights, contact us at <a href="mailto:tyaseen500@gmail.com">tyaseen500@gmail.com</a>.</p>
+                        <p>To exercise these rights, contact us at <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a>.</p>
                     </section>
 
                     <section>
@@ -162,7 +162,7 @@ const PrivacyPolicy = () => {
                         <p>If you have questions, concerns, or requests regarding this Privacy Policy, please contact us:</p>
                         <div className="contact-info">
                             <p><strong>Money Miners</strong></p>
-                            <p>Email: <a href="mailto:tyaseen500@gmail.com">tyaseen500@gmail.com</a></p>
+                            <p>Email: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Support: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Website: <a href="https://moneyminers.in">moneyminers.in</a></p>
                         </div>

@@ -1,6 +1,33 @@
 const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
 
+// ============================================================
+// SINGLETON TRANSPORTER — Reuse one SMTP connection for all emails
+// ============================================================
+let transporter = null;
+
+const getTransporter = () => {
+    if (!transporter && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            },
+            pool: true,
+            maxConnections: 5,
+            maxMessages: 100,
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+    }
+    return transporter;
+};
+
+// Helper to get admin email
+const getAdminEmail = () => process.env.ADMIN_EMAIL || 'prithwi1016@gmail.com';
+
 exports.submitContactForm = async (req, res) => {
     try {
         const { full_name, email, phone, secondary_phone, address, query } = req.body;
@@ -21,20 +48,14 @@ exports.submitContactForm = async (req, res) => {
         });
 
         // 2. Send Emails
-        // Only attempt to send email if credentials are present to avoid crashing validation
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                }
-            });
+        const mailer = getTransporter();
+        if (mailer) {
+            const adminEmail = getAdminEmail();
 
             // Admin notification email
             const adminMailOptions = {
-                from: process.env.EMAIL_USER,
-                to: 'tyaseen500@gmail.com',
+                from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+                to: adminEmail,
                 subject: `New Contact Query from ${full_name}`,
                 html: `
                     <h2>New Contact Form Submission</h2>
@@ -51,7 +72,7 @@ exports.submitContactForm = async (req, res) => {
 
             // User confirmation email
             const userMailOptions = {
-                from: process.env.EMAIL_USER,
+                from: `"Money Miners" <${process.env.EMAIL_USER}>`,
                 to: email,
                 subject: '✅ Thank You for Contacting Money Miners',
                 html: `
@@ -89,7 +110,7 @@ exports.submitContactForm = async (req, res) => {
                             <div style="text-align: center; margin-top: 35px;">
                                 <p style="color: #aaa; font-size: 14px; margin: 0 0 15px 0;">Need immediate assistance?</p>
                                 <p style="margin: 5px 0;">
-                                    <a href="mailto:tyaseen500@gmail.com" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 tyaseen500@gmail.com</a>
+                                    <a href="mailto:${adminEmail}" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 ${adminEmail}</a>
                                 </p>
                                 <p style="margin: 5px 0;">
                                     <a href="tel:+917667307696" style="color: #10B981; text-decoration: none; font-weight: 600;">📱 +91 76673 07696</a>
@@ -110,8 +131,8 @@ exports.submitContactForm = async (req, res) => {
 
             // Send both emails
             await Promise.all([
-                transporter.sendMail(adminMailOptions),
-                transporter.sendMail(userMailOptions)
+                mailer.sendMail(adminMailOptions),
+                mailer.sendMail(userMailOptions)
             ]);
         } else {
             console.warn('Email credentials not found in .env. Email not sent.');
@@ -132,24 +153,18 @@ exports.sendExclusiveInquiry = async (req, res) => {
             return res.status(400).json({ error: 'Please fill all required fields.' });
         }
 
-        // Check if email credentials are available
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        const mailer = getTransporter();
+        if (!mailer) {
             console.warn('Email credentials missing.');
             return res.status(500).json({ error: 'Server misconfiguration: Email credentials missing.' });
         }
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        const adminEmail = getAdminEmail();
 
         // 1. Send Email to Admin
         const adminMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'tyaseen500@gmail.com',
+            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
             subject: `💎 EXCLUSIVE CHANNEL INQUIRY: ${plan} Plan`,
             html: `
                 <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
@@ -201,7 +216,7 @@ exports.sendExclusiveInquiry = async (req, res) => {
 
         // 2. Send Beautiful Confirmation Email to User
         const userMailOptions = {
-            from: process.env.EMAIL_USER,
+            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: '✅ Thank You for Your Interest in Money Miners Exclusive Channel',
             html: `
@@ -252,7 +267,7 @@ exports.sendExclusiveInquiry = async (req, res) => {
                         <div style="text-align: center; margin-top: 35px;">
                             <p style="color: #aaa; font-size: 14px; margin: 0 0 15px 0;">Need immediate assistance?</p>
                             <p style="margin: 5px 0;">
-                                <a href="mailto:tyaseen500@gmail.com" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 tyaseen500@gmail.com</a>
+                                <a href="mailto:${adminEmail}" style="color: #10B981; text-decoration: none; font-weight: 600;">📧 ${adminEmail}</a>
                             </p>
                             <p style="margin: 5px 0;">
                                 <a href="tel:+917667307696" style="color: #10B981; text-decoration: none; font-weight: 600;">📱 +91 76673 07696</a>
@@ -273,8 +288,8 @@ exports.sendExclusiveInquiry = async (req, res) => {
 
         // Send both emails
         await Promise.all([
-            transporter.sendMail(adminMailOptions),
-            transporter.sendMail(userMailOptions)
+            mailer.sendMail(adminMailOptions),
+            mailer.sendMail(userMailOptions)
         ]);
 
         return res.status(200).json({

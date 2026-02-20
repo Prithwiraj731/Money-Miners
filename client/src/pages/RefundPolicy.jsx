@@ -111,7 +111,7 @@ const RefundPolicy = () => {
 
                         <h3>4.1 Step-by-Step Process</h3>
                         <ol>
-                            <li><strong>Contact Support:</strong> Email us at <a href="mailto:tyaseen500@gmail.com">tyaseen500@gmail.com</a> or <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></li>
+                            <li><strong>Contact Support:</strong> Email us at <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></li>
                             <li><strong>Provide Details:</strong> Include your order ID, purchase date, and reason for the refund</li>
                             <li><strong>Verification:</strong> Our team will verify your eligibility according to this policy</li>
                             <li><strong>Approval:</strong> If approved, you will receive a confirmation email within 2-3 business days</li>
@@ -208,7 +208,7 @@ const RefundPolicy = () => {
                         <div className="contact-info">
                             <p><strong>Money Miners</strong></p>
                             <p><strong>Refund Support Team</strong></p>
-                            <p>Email: <a href="mailto:tyaseen500@gmail.com">tyaseen500@gmail.com</a></p>
+                            <p>Email: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Support: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Website: <a href="https://moneyminers.in">moneyminers.in</a></p>
                             <p>Response Time: Within 24-48 hours on business days</p>

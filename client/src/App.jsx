@@ -20,6 +20,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
 import RefundPolicy from './pages/RefundPolicy';
+import AllCourses from './pages/AllCourses';
+import FAQ from './pages/FAQ';
 
 function Layout() {
   const location = useLocation();
@@ -39,7 +41,9 @@ function Layout() {
         <Route path="/surprise" element={<Surprise />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/exclusive" element={<ExclusiveChannel />} />
+        <Route path="/courses" element={<AllCourses />} />
         <Route path="/courses/:courseId" element={<CoursePage />} />
+        <Route path="/faq" element={<FAQ />} />
 
         {/* Legal Pages */}
         <Route path="/privacy" element={<PrivacyPolicy />} />

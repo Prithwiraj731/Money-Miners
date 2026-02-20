@@ -80,7 +80,7 @@ const Contact = () => {
                                     <div className="icon-box"><Mail size={20} /></div>
                                     <div className="item-text">
                                         <span className="label">Email Us</span>
-                                        <p>tyaseen500@gmail.com</p>
+                                        <p>prithwi1016@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="info-item">

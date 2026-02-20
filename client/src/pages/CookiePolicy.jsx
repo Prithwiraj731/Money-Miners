@@ -156,7 +156,7 @@ const CookiePolicy = () => {
                         <p>If you have questions or concerns about our use of cookies, please contact us:</p>
                         <div className="contact-info">
                             <p><strong>Money Miners</strong></p>
-                            <p>Email: <a href="mailto:tyaseen500@gmail.com">tyaseen500@gmail.com</a></p>
+                            <p>Email: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Support: <a href="mailto:prithwi1016@gmail.com">prithwi1016@gmail.com</a></p>
                             <p>Website: <a href="https://moneyminers.in">moneyminers.in</a></p>
                         </div>

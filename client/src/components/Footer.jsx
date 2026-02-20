@@ -1,6 +1,6 @@
 import React from 'react';
 import './Footer.css';
-import { Instagram, Youtube, Mail, Phone, Linkedin } from 'lucide-react';
+import { Instagram, Youtube, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // WhatsApp Icon Component
@@ -45,9 +45,6 @@ const Footer = () => {
                             <a href="https://x.com/TahaYasinaftab?t=y3dMDhndUQSx4HOcvWZqGQ&s=09" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                                 <TwitterIcon size={20} />
                             </a>
-                            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                                <Linkedin size={20} />
-                            </a>
                         </div>
                     </div>
 
@@ -75,9 +72,8 @@ const Footer = () => {
                         <h3>Resources</h3>
                         <ul>
                             <li><Link to="/about">About Us</Link></li>
-                            <li><Link to="/#courses">Courses</Link></li>
-                            <li><Link to="#">FAQ</Link></li>
-                            <li><Link to="#">Blog</Link></li>
+                            <li><Link to="/courses">Courses</Link></li>
+                            <li><Link to="/faq">FAQ</Link></li>
                         </ul>
                     </div>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Lock, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, Phone, ShieldCheck, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import API_URL from '../config/api';
 import './Auth.css';
 
@@ -24,6 +24,8 @@ const Auth = () => {
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -132,7 +134,12 @@ const Auth = () => {
                     className="auth-box"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
                 >
+                    {/* Decorative glow orbs */}
+                    <div className="auth-glow-orb auth-glow-orb-1" />
+                    <div className="auth-glow-orb auth-glow-orb-2" />
+
                     <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
                     <p className="auth-subtitle">
                         {isLogin ? 'Log in to access your dashboard' : 'Join Money Miners today'}
@@ -226,26 +233,42 @@ const Auth = () => {
                         <div className="input-group">
                             <Lock size={20} />
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 placeholder="Password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
                             />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
 
                         {!isLogin && (
                             <div className="input-group">
                                 <Lock size={20} />
                                 <input
-                                    type="password"
+                                    type={showConfirmPassword ? 'text' : 'password'}
                                     name="confirm_password"
                                     placeholder="Confirm Password"
                                     value={formData.confirm_password}
                                     onChange={handleChange}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    tabIndex={-1}
+                                >
+                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         )}
 

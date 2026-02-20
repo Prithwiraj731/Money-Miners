@@ -1,14 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Instagram, Twitter, Facebook, Play, Zap, Shield, Globe, BarChart2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Home.css';
 import bgImage from '../assets/background.jpg';
-import Spline from '@splinetool/react-spline';
+const Spline = lazy(() => import('@splinetool/react-spline'));
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision";
 import { FocusCards } from "../components/ui/focus-cards";
 import { LayoutTextFlip } from "../components/ui/layout-text-flip";
 import { coursesData } from '../data/coursesData';
+
+// Lightweight loading fallback for the Spline 3D model
+const SplineLoader = () => (
+    <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }}>
+        <div style={{
+            width: '120px',
+            height: '120px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(16,185,129,0.3) 0%, transparent 70%)',
+            animation: 'pulse 2s ease-in-out infinite'
+        }} />
+    </div>
+);
 
 const Home = () => {
     const navigate = useNavigate();
@@ -66,42 +85,44 @@ const Home = () => {
 
                 {/* --- RIGHT SIDE HERO IMAGE --- */}
                 <div className="hero-right-image-container">
-                    <Spline
-                        scene="/robot_follow_cursor_for_landing_page.spline"
-                        onLoad={(spline) => {
-                            // 1. Force Transparent Background via API
-                            if (spline) {
-                                if (typeof spline.setBackgroundColor === 'function') {
-                                    spline.setBackgroundColor('transparent');
-                                }
-                            }
-
-                            // 2. Robust Watermark Removal (Interval based)
-                            const removeLogo = () => {
-                                // 1. Try standard DOM access
-                                const logo = document.querySelector('.hero-right-image-container a');
-                                if (logo) {
-                                    logo.style.display = 'none';
-                                    logo.remove();
-                                }
-
-                                // 2. Try Shadow DOM access
-                                const viewer = document.querySelector('spline-viewer');
-                                if (viewer && viewer.shadowRoot) {
-                                    const logoInShadow = viewer.shadowRoot.querySelector('#logo');
-                                    if (logoInShadow) {
-                                        logoInShadow.style.display = 'none';
-                                        logoInShadow.remove();
+                    <Suspense fallback={<SplineLoader />}>
+                        <Spline
+                            scene="/robot_follow_cursor_for_landing_page.spline"
+                            onLoad={(spline) => {
+                                // 1. Force Transparent Background via API
+                                if (spline) {
+                                    if (typeof spline.setBackgroundColor === 'function') {
+                                        spline.setBackgroundColor('transparent');
                                     }
                                 }
-                            };
 
-                            // Run immediately and repeatedly for 5 seconds to catch lazy loading
-                            removeLogo();
-                            const intervalId = setInterval(removeLogo, 100);
-                            setTimeout(() => clearInterval(intervalId), 5000);
-                        }}
-                    />
+                                // 2. Robust Watermark Removal (Interval based)
+                                const removeLogo = () => {
+                                    // 1. Try standard DOM access
+                                    const logo = document.querySelector('.hero-right-image-container a');
+                                    if (logo) {
+                                        logo.style.display = 'none';
+                                        logo.remove();
+                                    }
+
+                                    // 2. Try Shadow DOM access
+                                    const viewer = document.querySelector('spline-viewer');
+                                    if (viewer && viewer.shadowRoot) {
+                                        const logoInShadow = viewer.shadowRoot.querySelector('#logo');
+                                        if (logoInShadow) {
+                                            logoInShadow.style.display = 'none';
+                                            logoInShadow.remove();
+                                        }
+                                    }
+                                };
+
+                                // Run immediately and repeatedly for 5 seconds to catch lazy loading
+                                removeLogo();
+                                const intervalId = setInterval(removeLogo, 100);
+                                setTimeout(() => clearInterval(intervalId), 5000);
+                            }}
+                        />
+                    </Suspense>
                 </div>
 
                 {/* --- BOTTOM LEFT CARD (Solid White Tab) --- */}

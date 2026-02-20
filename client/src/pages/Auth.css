@@ -1,159 +1,514 @@
+/* ============================================================
+   AUTH PAGE — Premium Glassmorphism Design
+   ============================================================ */
+
+@keyframes borderGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) scale(1);
+    }
+
+    50% {
+        transform: translateY(-20px) scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+}
+
 .auth-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at top right, #1a202c 0%, #000 100%);
+    background: #050505;
     padding-top: 80px;
-    /* Navbar space */
     padding-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background decorative elements */
+.auth-page::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -30%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: float 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.auth-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+    filter: blur(60px);
+    animation: float 10s ease-in-out infinite reverse;
+    pointer-events: none;
 }
 
 .auth-container {
     width: 100%;
-    max-width: 450px;
+    max-width: 460px;
+    position: relative;
+    z-index: 10;
+    padding: 0 20px;
 }
 
+/* ============================================================
+   ANIMATED BORDER GLOW CARD
+   ============================================================ */
 .auth-box {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    padding: 40px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 45px 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    box-shadow:
+        0 0 40px rgba(16, 185, 129, 0.05),
+        0 25px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: fadeInUp 0.6s ease-out;
+    overflow: hidden;
 }
 
+/* Animated gradient border effect */
+.auth-box::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 25px;
+    background: linear-gradient(90deg, #10B981, #059669, #34D399, #10B981, #059669);
+    background-size: 300% 300%;
+    animation: borderGlow 4s ease infinite;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* Inner background to cover the gradient except the border area */
+.auth-box::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    border-radius: 23px;
+    background: rgba(10, 10, 10, 0.95);
+    z-index: -1;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
 .auth-box h2 {
     text-align: center;
-    margin-bottom: 10px;
-    font-size: 2rem;
+    margin-bottom: 8px;
+    font-size: 2.2rem;
+    font-weight: 800;
     color: #fff;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .auth-subtitle {
     text-align: center;
-    color: #a0aec0;
-    margin-bottom: 30px;
+    color: #64748b;
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
 }
 
+/* ============================================================
+   INPUT FIELDS — Glowing Focus
+   ============================================================ */
 .input-group {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .input-group svg {
     position: absolute;
-    left: 15px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #a0aec0;
+    color: #4a5568;
     z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.input-group:focus-within svg {
+    color: #10B981;
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px 12px 12px 45px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    padding: 14px 16px 14px 48px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
     color: #fff;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #4a5568;
+    font-weight: 400;
 }
 
 .input-group input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background: rgba(0, 0, 0, 0.5);
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.04);
+    box-shadow:
+        0 0 0 3px rgba(16, 185, 129, 0.1),
+        0 0 20px rgba(16, 185, 129, 0.05);
 }
 
-/* New Styles for OTP & Verify */
+/* ============================================================
+   EMAIL + VERIFY BUTTON ROW
+   ============================================================ */
 .email-group {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.email-group .input-group {
-    margin-bottom: 0;
+.email-group input {
     flex: 1;
 }
 
 .btn-verify {
     background: transparent;
-    border: 1px solid #10B981;
+    border: 1.5px solid #10B981;
     color: #10B981;
-    padding: 0 16px;
-    height: 48px;
-    border-radius: 10px;
+    padding: 0 20px;
+    height: 50px;
+    border-radius: 14px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-verify::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-verify:hover::before {
+    left: 100%;
 }
 
 .btn-verify:hover {
     background: rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+    transform: translateY(-1px);
 }
 
 .btn-verify:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
-    border-color: #555;
-    color: #555;
+    border-color: #333;
+    color: #333;
+    box-shadow: none;
+    transform: none;
 }
 
+/* ============================================================
+   OTP VERIFIED INDICATOR
+   ============================================================ */
 .text-green {
     color: #10B981;
+    filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
 }
 
+/* ============================================================
+   SUBMIT BUTTON — Animated Gradient
+   ============================================================ */
 .full-width {
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
+.btn.btn-primary.full-width {
+    width: 100%;
+    padding: 15px 24px;
+    background: linear-gradient(135deg, #10B981, #059669);
+    border: none;
+    border-radius: 14px;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+}
+
+.btn.btn-primary.full-width::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+.btn.btn-primary.full-width:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 25px rgba(16, 185, 129, 0.3),
+        0 0 40px rgba(16, 185, 129, 0.1);
+}
+
+.btn.btn-primary.full-width:active {
+    transform: translateY(0);
+}
+
+.btn.btn-primary.full-width:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ============================================================
+   TOGGLE — Login/Signup Switch
+   ============================================================ */
 .auth-switch {
     text-align: center;
-    margin-top: 20px;
-    color: #a0aec0;
+    margin-top: 28px;
+    color: #64748b;
     font-size: 0.9rem;
 }
 
 .text-btn {
     background: none;
     border: none;
-    color: var(--primary-color);
-    font-weight: 600;
+    color: #10B981;
+    font-weight: 700;
     padding: 0;
     margin-left: 5px;
     text-transform: none;
     letter-spacing: 0;
     cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.text-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #10B981;
+    transition: width 0.3s ease;
+}
+
+.text-btn:hover::after {
+    width: 100%;
 }
 
 .text-btn:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    color: #34D399;
 }
 
+/* ============================================================
+   MESSAGE BANNERS
+   ============================================================ */
 .error-msg {
-    background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-    padding: 10px;
-    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.08);
+    color: #f87171;
+    padding: 12px 16px;
+    border-radius: 12px;
     margin-bottom: 20px;
     text-align: center;
     font-size: 0.9rem;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    font-weight: 500;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 0.3s ease-out;
 }
 
 .success-msg {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10B981;
-    padding: 10px;
-    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.08);
+    color: #34D399;
+    padding: 12px 16px;
+    border-radius: 12px;
     margin-bottom: 20px;
     text-align: center;
     font-size: 0.9rem;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    font-weight: 500;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* ============================================================
+   DECORATIVE ELEMENTS
+   ============================================================ */
+.auth-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.auth-glow-orb-1 {
+    width: 200px;
+    height: 200px;
+    background: rgba(16, 185, 129, 0.12);
+    top: -80px;
+    right: -60px;
+    animation: float 6s ease-in-out infinite;
+}
+
+.auth-glow-orb-2 {
+    width: 150px;
+    height: 150px;
+    background: rgba(16, 185, 129, 0.08);
+    bottom: -50px;
+    left: -40px;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+/* ============================================================
+   PASSWORD TOGGLE
+   ============================================================ */
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #4a5568;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: #10B981;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+    .auth-box {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+
+    .auth-box h2 {
+        font-size: 1.8rem;
+    }
+
+    .email-group {
+        flex-direction: column;
+    }
+
+    .btn-verify {
+        width: 100%;
+        height: 44px;
+    }
 }
