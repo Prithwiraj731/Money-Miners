@@ -2,27 +2,62 @@ const Contact = require('../models/Contact');
 const nodemailer = require('nodemailer');
 
 // ============================================================
-// SINGLETON TRANSPORTER — Reuse one SMTP connection for all emails
+// PRODUCTION-GRADE EMAIL SENDING
+// Creates a fresh transporter per request to avoid stale pool
+// connections that break silently in production environments.
 // ============================================================
-let transporter = null;
-
-const getTransporter = () => {
-    if (!transporter && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            },
-            pool: true,
-            maxConnections: 5,
-            maxMessages: 100,
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
+const createTransporter = () => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.error('[EMAIL] Missing EMAIL_USER or EMAIL_PASS in environment variables.');
+        return null;
     }
-    return transporter;
+
+    return nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+        tls: {
+            rejectUnauthorized: false,
+            minVersion: 'TLSv1.2'
+        },
+        debug: false,
+        logger: false
+    });
+};
+
+// Send mail with automatic retry + fresh transporter on each attempt
+const sendMailSafe = async (mailOptions) => {
+    const maxRetries = 2;
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        const transporter = createTransporter();
+        if (!transporter) throw new Error('Email credentials not configured');
+
+        try {
+            const result = await transporter.sendMail(mailOptions);
+            console.log(`[EMAIL] Sent to ${mailOptions.to} (attempt ${attempt})`);
+            transporter.close();
+            return result;
+        } catch (err) {
+            lastError = err;
+            console.error(`[EMAIL] Attempt ${attempt} failed:`, err.message);
+            try { transporter.close(); } catch (_) { }
+
+            if (attempt < maxRetries && (err.code === 'ECONNECTION' || err.code === 'ETIMEDOUT' || err.code === 'ESOCKET')) {
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+    }
+
+    throw lastError;
 };
 
 // Helper to get admin email
@@ -47,9 +82,8 @@ exports.submitContactForm = async (req, res) => {
             query
         });
 
-        // 2. Send Emails
-        const mailer = getTransporter();
-        if (mailer) {
+        // 2. Send Emails (don't fail the whole request if user confirmation fails)
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const adminEmail = getAdminEmail();
 
             // Admin notification email
@@ -129,18 +163,24 @@ exports.submitContactForm = async (req, res) => {
                 `
             };
 
-            // Send both emails
-            await Promise.all([
-                mailer.sendMail(adminMailOptions),
-                mailer.sendMail(userMailOptions)
+            // Send both emails (allSettled so user-confirmation failure doesn't block admin notification)
+            const results = await Promise.allSettled([
+                sendMailSafe(adminMailOptions),
+                sendMailSafe(userMailOptions)
             ]);
+
+            results.forEach((r, i) => {
+                if (r.status === 'rejected') {
+                    console.error(`[CONTACT EMAIL] Email ${i + 1} failed:`, r.reason?.message);
+                }
+            });
         } else {
-            console.warn('Email credentials not found in .env. Email not sent.');
+            console.warn('[CONTACT] Email credentials not found in env. Emails not sent.');
         }
 
         res.status(201).json({ message: 'Query submitted successfully! Check your email for confirmation.', contact: newContact });
     } catch (error) {
-        console.error('Contact submission error:', error);
+        console.error('[CONTACT ERROR]', error.message);
         res.status(500).json({ error: 'Failed to submit query. Please try again.' });
     }
 };
@@ -153,9 +193,8 @@ exports.sendExclusiveInquiry = async (req, res) => {
             return res.status(400).json({ error: 'Please fill all required fields.' });
         }
 
-        const mailer = getTransporter();
-        if (!mailer) {
-            console.warn('Email credentials missing.');
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error('[EXCLUSIVE] Email credentials missing in environment.');
             return res.status(500).json({ error: 'Server misconfiguration: Email credentials missing.' });
         }
 
@@ -286,18 +325,29 @@ exports.sendExclusiveInquiry = async (req, res) => {
             `
         };
 
-        // Send both emails
-        await Promise.all([
-            mailer.sendMail(adminMailOptions),
-            mailer.sendMail(userMailOptions)
+        // Send both emails with retry logic
+        const results = await Promise.allSettled([
+            sendMailSafe(adminMailOptions),
+            sendMailSafe(userMailOptions)
         ]);
+
+        // Check if at least admin email succeeded
+        if (results[0].status === 'rejected') {
+            console.error('[EXCLUSIVE] Admin email failed:', results[0].reason?.message);
+            throw results[0].reason;
+        }
+
+        if (results[1].status === 'rejected') {
+            console.error('[EXCLUSIVE] User confirmation email failed:', results[1].reason?.message);
+        }
 
         return res.status(200).json({
             message: 'Inquiry sent successfully! Check your email for confirmation.'
         });
 
     } catch (error) {
-        console.error('Exclusive inquiry error:', error);
+        console.error('[EXCLUSIVE ERROR]', error.message, error.code || '');
         return res.status(500).json({ error: 'Failed to send inquiry. Please try again.' });
     }
 };
+

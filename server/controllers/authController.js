@@ -5,27 +5,63 @@ const nodemailer = require('nodemailer');
 const supabase = require('../config/supabase');
 
 // ============================================================
-// SINGLETON TRANSPORTER — Reuse one SMTP connection for all emails
+// PRODUCTION-GRADE EMAIL SENDING
+// Creates a fresh transporter per request to avoid stale pool
+// connections that break silently in production environments.
 // ============================================================
-let transporter = null;
-
-const getTransporter = () => {
-    if (!transporter && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            },
-            pool: true,        // Use connection pooling for speed
-            maxConnections: 5,  // Allow up to 5 simultaneous connections
-            maxMessages: 100,   // Send up to 100 messages per connection
-            tls: {
-                rejectUnauthorized: false // Prevent TLS issues in some environments
-            }
-        });
+const createTransporter = () => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.error('[EMAIL] Missing EMAIL_USER or EMAIL_PASS in environment variables.');
+        return null;
     }
-    return transporter;
+
+    return nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,               // Use SSL on port 465
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        connectionTimeout: 10000,    // 10s to establish TCP connection
+        greetingTimeout: 10000,      // 10s for SMTP greeting
+        socketTimeout: 15000,        // 15s for socket inactivity
+        tls: {
+            rejectUnauthorized: false,
+            minVersion: 'TLSv1.2'
+        },
+        debug: false,
+        logger: false
+    });
+};
+
+// Send mail with automatic retry + fresh transporter on each attempt
+const sendMailSafe = async (mailOptions) => {
+    const maxRetries = 2;
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        const transporter = createTransporter();
+        if (!transporter) throw new Error('Email credentials not configured');
+
+        try {
+            const result = await transporter.sendMail(mailOptions);
+            console.log(`[EMAIL] Sent to ${mailOptions.to} (attempt ${attempt})`);
+            transporter.close();
+            return result;
+        } catch (err) {
+            lastError = err;
+            console.error(`[EMAIL] Attempt ${attempt} failed:`, err.message);
+            try { transporter.close(); } catch (_) { }
+
+            // Only retry on transient errors
+            if (attempt < maxRetries && (err.code === 'ECONNECTION' || err.code === 'ETIMEDOUT' || err.code === 'ESOCKET')) {
+                await new Promise(r => setTimeout(r, 1000)); // wait 1s before retry
+            }
+        }
+    }
+
+    throw lastError;
 };
 
 // Generate a 6-digit OTP
@@ -54,43 +90,43 @@ exports.sendOtp = async (req, res) => {
 
         if (error) throw error;
 
-        // Send Email using the singleton transporter
-        const mailer = getTransporter();
-        if (mailer) {
-            await mailer.sendMail({
-                from: `"Money Miners" <${process.env.EMAIL_USER}>`,
-                to: email,
-                subject: 'Money Miners - Your Verification Code',
-                html: `
-                    <div style="font-family: 'Arial', sans-serif; max-width: 500px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
-                        <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 30px; text-align: center;">
-                            <h1 style="margin: 0; font-size: 28px; color: #000; font-weight: 800;">Money Miners</h1>
-                            <p style="margin: 8px 0 0; color: #000; opacity: 0.8;">Email Verification</p>
-                        </div>
-                        <div style="padding: 40px 30px; text-align: center;">
-                            <p style="color: #ddd; font-size: 16px; margin-bottom: 25px;">Your verification code is:</p>
-                            <div style="background: rgba(16,185,129,0.15); border: 2px solid #10B981; border-radius: 12px; padding: 20px; display: inline-block; letter-spacing: 8px; font-size: 36px; font-weight: 800; color: #10B981;">
-                                ${otp}
-                            </div>
-                            <p style="color: #888; font-size: 14px; margin-top: 25px;">This code expires in <strong style="color:#FFD700;">10 minutes</strong>.</p>
-                            <p style="color: #666; font-size: 13px; margin-top: 20px;">If you did not request this code, please ignore this email.</p>
-                        </div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1);">
-                            <p style="margin: 0; color: #666; font-size: 12px;">© Money Miners. All rights reserved.</p>
-                        </div>
-                    </div>
-                `
-            });
-
-            res.json({ message: 'OTP sent successfully to your email.' });
-        } else {
-            console.log('OTP (Mock):', otp);
-            res.json({ message: 'OTP sent (Check server console for mock)' });
+        // Check email credentials exist
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.log('[OTP] Mock mode (no email credentials):', otp);
+            return res.json({ message: 'OTP sent (Check server console for mock)' });
         }
 
+        // Send Email with retry logic
+        await sendMailSafe({
+            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Money Miners - Your Verification Code',
+            html: `
+                <div style="font-family: 'Arial', sans-serif; max-width: 500px; margin: 0 auto; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); color: #fff; border-radius: 16px; overflow: hidden; border: 2px solid #10B981;">
+                    <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 30px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 28px; color: #000; font-weight: 800;">Money Miners</h1>
+                        <p style="margin: 8px 0 0; color: #000; opacity: 0.8;">Email Verification</p>
+                    </div>
+                    <div style="padding: 40px 30px; text-align: center;">
+                        <p style="color: #ddd; font-size: 16px; margin-bottom: 25px;">Your verification code is:</p>
+                        <div style="background: rgba(16,185,129,0.15); border: 2px solid #10B981; border-radius: 12px; padding: 20px; display: inline-block; letter-spacing: 8px; font-size: 36px; font-weight: 800; color: #10B981;">
+                            ${otp}
+                        </div>
+                        <p style="color: #888; font-size: 14px; margin-top: 25px;">This code expires in <strong style="color:#FFD700;">10 minutes</strong>.</p>
+                        <p style="color: #666; font-size: 13px; margin-top: 20px;">If you did not request this code, please ignore this email.</p>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <p style="margin: 0; color: #666; font-size: 12px;">© Money Miners. All rights reserved.</p>
+                    </div>
+                </div>
+            `
+        });
+
+        res.json({ message: 'OTP sent successfully to your email.' });
+
     } catch (error) {
-        console.error('Send OTP Error:', error);
-        res.status(500).json({ message: 'Failed to send OTP' });
+        console.error('[OTP ERROR]', error.message, error.code || '');
+        res.status(500).json({ message: 'Failed to send OTP. Please try again in a moment.' });
     }
 };
 
