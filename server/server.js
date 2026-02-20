@@ -17,13 +17,13 @@ const PORT = process.env.PORT || 5000;
 // ============================================================
 // SECURITY: Validate Required Environment Variables
 // ============================================================
-const requiredEnvVars = ['JWT_SECRET'];
+const requiredEnvVars = ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_KEY'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
     console.error('❌ FATAL ERROR: Missing required environment variables:');
     missingEnvVars.forEach(envVar => console.error(`   - ${envVar}`));
-    console.error('\nServer cannot start without these variables. Please check your .env file.');
+    console.error('\nServer cannot start without these variables. Please check your Render/Environment configuration.');
     process.exit(1); // Exit with error code
 }
 
@@ -80,6 +80,30 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/contact', require('./routes/contactRoutes'));
+
+// ============================================================
+// DIAGNOSTIC ROUTE
+// ============================================================
+app.get('/api/debug-status', async (req, res) => {
+    const status = {
+        database: 'Checking...',
+        email: 'Checking...',
+        env: {
+            SUPABASE: !!process.env.SUPABASE_URL && !!process.env.SUPABASE_KEY,
+            EMAIL: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS
+        }
+    };
+
+    try {
+        const supabase = require('./config/supabase');
+        const { error } = await supabase.from('users').select('count', { count: 'exact', head: true });
+        status.database = error ? `Error: ${error.message}` : '✅ Connected';
+    } catch (e) {
+        status.database = `Failed: ${e.message}`;
+    }
+
+    res.json(status);
+});
 
 // ============================================================
 // HEALTH CHECK

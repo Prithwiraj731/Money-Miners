@@ -181,7 +181,10 @@ exports.submitContactForm = async (req, res) => {
         res.status(201).json({ message: 'Query submitted successfully! Check your email for confirmation.', contact: newContact });
     } catch (error) {
         console.error('[CONTACT ERROR]', error.message);
-        res.status(500).json({ error: 'Failed to submit query. Please try again.' });
+        res.status(500).json({
+            error: 'Failed to submit query. Please try again.',
+            error_code: error.code || 'UNKNOWN_ERROR'
+        });
     }
 };
 
@@ -347,7 +350,10 @@ exports.sendExclusiveInquiry = async (req, res) => {
 
     } catch (error) {
         console.error('[EXCLUSIVE ERROR]', error.message, error.code || '');
-        return res.status(500).json({ error: 'Failed to send inquiry. Please try again.' });
+        return res.status(500).json({
+            error: 'Failed to send inquiry. Please try again.',
+            error_code: error.code || 'UNKNOWN_ERROR'
+        });
     }
 };
 

@@ -126,7 +126,11 @@ exports.sendOtp = async (req, res) => {
 
     } catch (error) {
         console.error('[OTP ERROR]', error.message, error.code || '');
-        res.status(500).json({ message: 'Failed to send OTP. Please try again in a moment.' });
+        res.status(500).json({
+            message: 'Failed to send OTP. Please try again in a moment.',
+            error_code: error.code || 'UNKNOWN_ERROR',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
