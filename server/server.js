@@ -30,9 +30,6 @@ if (missingEnvVars.length > 0) {
     process.exit(1);
 }
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
 // ============================================================
 // MIDDLEWARE: CORS (Must be at the very top)
 // ============================================================
@@ -42,10 +39,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps)
         if (!origin) return callback(null, true);
 
-        // Match any subdomain of moneyminers.in or the explicitly allowed list
         const isAllowed = allowedOrigins.includes(origin) ||
             origin.endsWith('moneyminers.in') ||
             origin.endsWith('money-miners.vercel.app');
@@ -60,13 +55,13 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 200 // Some legacy browsers prefer 200
+    optionsSuccessStatus: 200
 }));
 
 app.use(compression());
 app.use(express.json());
 
-// Global API Rate Limiting (Applied to all /api routes)
+// Global API Rate Limiting
 app.use('/api', apiGeneralLimiter);
 
 // ============================================================
@@ -83,6 +78,7 @@ app.get('/api/debug-status', async (req, res) => {
     res.json({
         status: 'online',
         purchases_ready: true,
+        version: '2.2.0',
         env: {
             SUPABASE: !!process.env.SUPABASE_URL,
             RESEND: !!process.env.RESEND_API_KEY
@@ -91,14 +87,12 @@ app.get('/api/debug-status', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.json({ status: 'running', message: 'Money Miners API v2.1' });
+    res.json({ status: 'running', message: 'Money Miners API v2.2' });
 });
 
 // ============================================================
 // ERROR HANDLING
 // ============================================================
-
-// 404 Handler with Logging for Debugging
 app.use((req, res) => {
     console.warn(`[404] Route not found: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
