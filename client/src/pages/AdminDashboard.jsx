@@ -48,7 +48,7 @@ const AdminDashboard = () => {
                 : `${API_URL}/api/purchases/admin/status`;
 
             const response = await fetch(targetUrl, {
-                method: 'PATCH',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

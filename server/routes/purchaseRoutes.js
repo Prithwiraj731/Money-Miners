@@ -14,6 +14,6 @@ router.get('/user', requireAuth, getUserPurchases);
 
 // Admin Routes
 router.get('/admin/all', requireAdmin, getAllPurchases);
-router.patch('/admin/status', requireAdmin, updatePurchaseStatus);
+router.put('/admin/status', requireAdmin, updatePurchaseStatus);
 
 module.exports = router;

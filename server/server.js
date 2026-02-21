@@ -30,30 +30,40 @@ if (missingEnvVars.length > 0) {
     process.exit(1);
 }
 
-// ============================================================
-// MIDDLEWARE
-// ============================================================
-app.use(compression());
+const app = express();
+const PORT = process.env.PORT || 5000;
 
+// ============================================================
+// MIDDLEWARE: CORS (Must be at the very top)
+// ============================================================
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-    : ['http://localhost:5173'];
+    : ['http://localhost:5173', 'https://moneyminers.in', 'https://www.moneyminers.in'];
 
-const corsOptions = {
+app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (like mobile apps)
+        if (!origin) return callback(null, true);
+
+        // Match any subdomain of moneyminers.in or the explicitly allowed list
+        const isAllowed = allowedOrigins.includes(origin) ||
+            origin.endsWith('moneyminers.in') ||
+            origin.endsWith('money-miners.vercel.app');
+
+        if (isAllowed) {
             callback(null, true);
         } else {
+            console.warn(`CORS blocked: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    maxAge: 86400
-};
+    optionsSuccessStatus: 200 // Some legacy browsers prefer 200
+}));
 
-app.use(cors(corsOptions));
+app.use(compression());
 app.use(express.json());
 
 // Global API Rate Limiting (Applied to all /api routes)
