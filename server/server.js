@@ -87,10 +87,10 @@ app.use('/api/contact', require('./routes/contactRoutes'));
 app.get('/api/debug-status', async (req, res) => {
     const status = {
         database: 'Checking...',
-        email: 'Checking...',
+        email_api: 'Checking...',
         env: {
             SUPABASE: !!process.env.SUPABASE_URL && !!process.env.SUPABASE_KEY,
-            EMAIL: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS
+            RESEND: !!process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_xxxxxxxxx'
         }
     };
 

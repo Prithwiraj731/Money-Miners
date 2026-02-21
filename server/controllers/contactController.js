@@ -1,55 +1,46 @@
 const Contact = require('../models/Contact');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 // ============================================================
-// PRODUCTION-GRADE EMAIL SENDING
-// Creates a fresh transporter per request to avoid stale pool
-// connections that break silently in production environments.
+// RESEND API EMAIL SENDING
+// Bypasses Render's SMTP block by using Resend's HTTP API.
 // ============================================================
-const createTransporter = () => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.error('[EMAIL] Missing EMAIL_USER or EMAIL_PASS in environment variables.');
+const getResend = () => {
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_xxxxxxxxx') {
+        console.error('[EMAIL] Missing or invalid RESEND_API_KEY in environment variables.');
         return null;
     }
-
-    return nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,              // false = STARTTLS (port 587 - allowed by cloud hosts)
-        requireTLS: true,           // Force upgrade to TLS via STARTTLS
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 20000,
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
+    return new Resend(process.env.RESEND_API_KEY);
 };
 
-// Send mail with automatic retry + fresh transporter on each attempt
-const sendMailSafe = async (mailOptions) => {
+// Send mail via Resend API with automatic retry
+const sendMailResend = async (mailOptions) => {
+    const resend = getResend();
+    if (!resend) throw new Error('Resend API key not configured');
+
     const maxRetries = 2;
     let lastError = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        const transporter = createTransporter();
-        if (!transporter) throw new Error('Email credentials not configured');
-
         try {
-            const result = await transporter.sendMail(mailOptions);
-            console.log(`[EMAIL] Sent to ${mailOptions.to} (attempt ${attempt})`);
-            transporter.close();
-            return result;
+            const { data, error } = await resend.emails.send({
+                from: mailOptions.from || 'onboarding@resend.dev',
+                to: mailOptions.to,
+                subject: mailOptions.subject,
+                html: mailOptions.html,
+            });
+
+            if (error) {
+                throw new Error(error.message || 'Resend API error');
+            }
+
+            console.log(`[EMAIL] Sent to ${mailOptions.to} via Resend (ID: ${data.id})`);
+            return data;
         } catch (err) {
             lastError = err;
-            console.error(`[EMAIL] Attempt ${attempt} failed:`, err.message);
-            try { transporter.close(); } catch (_) { }
+            console.error(`[EMAIL] Resend attempt ${attempt} failed:`, err.message);
 
-            if (attempt < maxRetries && (err.code === 'ECONNECTION' || err.code === 'ETIMEDOUT' || err.code === 'ESOCKET')) {
+            if (attempt < maxRetries) {
                 await new Promise(r => setTimeout(r, 1000));
             }
         }
@@ -80,13 +71,13 @@ exports.submitContactForm = async (req, res) => {
             query
         });
 
-        // 2. Send Emails (don't fail the whole request if user confirmation fails)
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        // 2. Send Emails via Resend
+        if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_xxxxxxxxx') {
             const adminEmail = getAdminEmail();
 
             // Admin notification email
             const adminMailOptions = {
-                from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+                from: 'Money Miners <noreply@moneyminers.in>',
                 to: adminEmail,
                 subject: `New Contact Query from ${full_name}`,
                 html: `
@@ -104,7 +95,7 @@ exports.submitContactForm = async (req, res) => {
 
             // User confirmation email
             const userMailOptions = {
-                from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+                from: 'Money Miners <noreply@moneyminers.in>',
                 to: email,
                 subject: '✅ Thank You for Contacting Money Miners',
                 html: `
@@ -161,10 +152,10 @@ exports.submitContactForm = async (req, res) => {
                 `
             };
 
-            // Send both emails (allSettled so user-confirmation failure doesn't block admin notification)
+            // Send both emails via Resend
             const results = await Promise.allSettled([
-                sendMailSafe(adminMailOptions),
-                sendMailSafe(userMailOptions)
+                sendMailResend(adminMailOptions),
+                sendMailResend(userMailOptions)
             ]);
 
             results.forEach((r, i) => {
@@ -173,7 +164,7 @@ exports.submitContactForm = async (req, res) => {
                 }
             });
         } else {
-            console.warn('[CONTACT] Email credentials not found in env. Emails not sent.');
+            console.warn('[CONTACT] RESEND_API_KEY for email sending not configured accurately. Emails not sent.');
         }
 
         res.status(201).json({ message: 'Query submitted successfully! Check your email for confirmation.', contact: newContact });
@@ -194,16 +185,15 @@ exports.sendExclusiveInquiry = async (req, res) => {
             return res.status(400).json({ error: 'Please fill all required fields.' });
         }
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error('[EXCLUSIVE] Email credentials missing in environment.');
-            return res.status(500).json({ error: 'Server misconfiguration: Email credentials missing.' });
+        if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_xxxxxxxxx') {
+            console.error('[EXCLUSIVE] RESEND_API_KEY missing or invalid in environment.');
+            return res.status(500).json({ error: 'Server misconfiguration: RESEND_API_KEY missing.' });
         }
 
         const adminEmail = getAdminEmail();
 
-        // 1. Send Email to Admin
         const adminMailOptions = {
-            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+            from: 'Money Miners <noreply@moneyminers.in>',
             to: adminEmail,
             subject: `💎 EXCLUSIVE CHANNEL INQUIRY: ${plan} Plan`,
             html: `
@@ -256,7 +246,7 @@ exports.sendExclusiveInquiry = async (req, res) => {
 
         // 2. Send Beautiful Confirmation Email to User
         const userMailOptions = {
-            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+            from: 'Money Miners <noreply@moneyminers.in>',
             to: email,
             subject: '✅ Thank You for Your Interest in Money Miners Exclusive Channel',
             html: `
@@ -326,10 +316,10 @@ exports.sendExclusiveInquiry = async (req, res) => {
             `
         };
 
-        // Send both emails with retry logic
+        // Send both emails via Resend
         const results = await Promise.allSettled([
-            sendMailSafe(adminMailOptions),
-            sendMailSafe(userMailOptions)
+            sendMailResend(adminMailOptions),
+            sendMailResend(userMailOptions)
         ]);
 
         // Check if at least admin email succeeded

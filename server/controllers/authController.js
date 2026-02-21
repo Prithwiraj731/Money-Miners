@@ -1,60 +1,50 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const supabase = require('../config/supabase');
 
 // ============================================================
-// PRODUCTION-GRADE EMAIL SENDING
-// Creates a fresh transporter per request to avoid stale pool
-// connections that break silently in production environments.
+// RESEND API EMAIL SENDING
+// Bypasses Render's SMTP block by using Resend's HTTP API.
 // ============================================================
-const createTransporter = () => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.error('[EMAIL] Missing EMAIL_USER or EMAIL_PASS in environment variables.');
+const getResend = () => {
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_xxxxxxxxx') {
+        console.error('[EMAIL] Missing or invalid RESEND_API_KEY in environment variables.');
         return null;
     }
-
-    return nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,              // false = STARTTLS (port 587 - allowed by cloud hosts)
-        requireTLS: true,           // Force upgrade to TLS via STARTTLS
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 20000,
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
+    return new Resend(process.env.RESEND_API_KEY);
 };
 
-// Send mail with automatic retry + fresh transporter on each attempt
-const sendMailSafe = async (mailOptions) => {
+// Send mail via Resend API with automatic retry
+const sendMailResend = async (mailOptions) => {
+    const resend = getResend();
+    if (!resend) throw new Error('Resend API key not configured');
+
     const maxRetries = 2;
     let lastError = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        const transporter = createTransporter();
-        if (!transporter) throw new Error('Email credentials not configured');
-
         try {
-            const result = await transporter.sendMail(mailOptions);
-            console.log(`[EMAIL] Sent to ${mailOptions.to} (attempt ${attempt})`);
-            transporter.close();
-            return result;
+            const { data, error } = await resend.emails.send({
+                from: mailOptions.from || 'onboarding@resend.dev',
+                to: mailOptions.to,
+                subject: mailOptions.subject,
+                html: mailOptions.html,
+            });
+
+            if (error) {
+                throw new Error(error.message || 'Resend API error');
+            }
+
+            console.log(`[EMAIL] Sent to ${mailOptions.to} via Resend (ID: ${data.id})`);
+            return data;
         } catch (err) {
             lastError = err;
-            console.error(`[EMAIL] Attempt ${attempt} failed:`, err.message);
-            try { transporter.close(); } catch (_) { }
+            console.error(`[EMAIL] Resend attempt ${attempt} failed:`, err.message);
 
-            // Only retry on transient errors
-            if (attempt < maxRetries && (err.code === 'ECONNECTION' || err.code === 'ETIMEDOUT' || err.code === 'ESOCKET')) {
-                await new Promise(r => setTimeout(r, 1000)); // wait 1s before retry
+            if (attempt < maxRetries) {
+                await new Promise(r => setTimeout(r, 1000));
             }
         }
     }
@@ -94,9 +84,9 @@ exports.sendOtp = async (req, res) => {
             return res.json({ message: 'OTP sent (Check server console for mock)' });
         }
 
-        // Send Email with retry logic
-        await sendMailSafe({
-            from: `"Money Miners" <${process.env.EMAIL_USER}>`,
+        // Send Email via Resend
+        await sendMailResend({
+            from: 'Money Miners <noreply@moneyminers.in>', // Professional verified sender
             to: email,
             subject: 'Money Miners - Your Verification Code',
             html: `
