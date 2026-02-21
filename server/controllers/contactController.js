@@ -14,21 +14,19 @@ const createTransporter = () => {
 
     return nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false,              // false = STARTTLS (port 587 - allowed by cloud hosts)
+        requireTLS: true,           // Force upgrade to TLS via STARTTLS
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
         tls: {
-            rejectUnauthorized: false,
-            minVersion: 'TLSv1.2'
-        },
-        debug: false,
-        logger: false
+            rejectUnauthorized: false
+        }
     });
 };
 
