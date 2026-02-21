@@ -84,7 +84,7 @@ const AdminDashboard = () => {
             <header className="admin-topbar">
                 <div className="admin-brand">
                     <Terminal size={24} />
-                    <span>ADMIN_CONSOLE_V1.0</span>
+                    <span>ADMIN_CONSOLE_V2.2</span>
                 </div>
                 <div className="status-indicator">
                     <div className="dot"></div>
