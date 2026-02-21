@@ -50,10 +50,13 @@ const Checkout = () => {
 
         try {
             const token = localStorage.getItem('token');
+            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
+                ? '/api/purchases/submit'
+                : `${API_URL}/api/purchases/submit`;
 
-            console.log('Submitting purchase to:', `${API_URL}/api/purchases/submit`);
+            console.log('Submitting purchase to:', targetUrl);
 
-            const response = await fetch(`${API_URL}/api/purchases/submit`, {
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
