@@ -80,6 +80,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/purchases', require('./routes/purchaseRoutes'));
 
 // ============================================================
 // DIAGNOSTIC ROUTE

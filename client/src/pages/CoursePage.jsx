@@ -254,7 +254,7 @@ const CoursePage = () => {
                                 className="btn-primary-cta"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate('/contact')}
+                                onClick={() => navigate(`/checkout/${course.id}`)}
                             >
                                 Enroll for ₹{course.price.toLocaleString()}
                             </motion.button>

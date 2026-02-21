@@ -10,6 +10,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [cart, setCart] = useState([]);
+    const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,6 +23,7 @@ const Dashboard = () => {
             try {
                 setUser(JSON.parse(userData));
                 fetchCart(token);
+                fetchPurchases(token);
             } catch (error) {
                 console.error("Failed to parse user data:", error);
                 localStorage.removeItem('user');
@@ -33,17 +35,26 @@ const Dashboard = () => {
     const fetchCart = async (token) => {
         try {
             const response = await fetch(`${API_URL}/api/cart`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
             if (!response.ok) throw new Error('Failed to fetch cart');
-
             const data = await response.json();
             setCart(data.cart || []);
         } catch (error) {
             console.error('Error fetching cart:', error);
+        }
+    };
+
+    const fetchPurchases = async (token) => {
+        try {
+            const response = await fetch(`${API_URL}/api/purchases/user`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch purchases');
+            const data = await response.json();
+            setPurchases(data.purchases || []);
+        } catch (error) {
+            console.error('Error fetching purchases:', error);
         } finally {
             setLoading(false);
         }
@@ -54,17 +65,12 @@ const Dashboard = () => {
             const token = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/api/cart/${courseId}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-
             if (!response.ok) throw new Error('Failed to remove from cart');
-
             setCart(cart.filter(item => item.course_id !== courseId));
         } catch (error) {
             console.error('Error removing from cart:', error);
-            alert('Failed to remove course from cart');
         }
     };
 
@@ -77,35 +83,66 @@ const Dashboard = () => {
 
     if (!user) return null;
 
-    // Get course details for cart items
     const cartCourses = cart.map(item => {
         const course = coursesData.find(c => c.id === item.course_id);
-        return { ...course, cartId: item.id };
+        return course ? { ...course, cartId: item.id } : null;
     }).filter(Boolean);
 
     return (
         <div className="dashboard-new">
-            {/* Main Content */}
             <main className="dashboard-main">
                 <div className="container">
-                    {/* Welcome Section */}
-                    <motion.div
-                        className="welcome-section"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
+                    <motion.div className="welcome-section" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <div className="welcome-content">
                             <div>
                                 <h1>Welcome back, <span className="username-highlight">{user.username}</span>! 👋</h1>
-                                <p>Your cart has {cartCourses.length} {cartCourses.length === 1 ? 'course' : 'courses'}</p>
+                                <p>Manage your courses and learning journey below.</p>
                             </div>
-                            <button className="logout-btn-dash" onClick={handleLogout} title="Logout">
-                                <LogOut size={20} />
-                                Logout
+                            <button className="logout-btn-dash" onClick={handleLogout}>
+                                <LogOut size={20} /> Logout
                             </button>
                         </div>
                     </motion.div>
+
+                    {/* My Enrolments Section */}
+                    <div className="cart-section" style={{ marginBottom: '60px' }}>
+                        <div className="section-header-dash">
+                            <div className="title-with-icon">
+                                <BarChart3 size={28} color="#10B981" />
+                                <h2>My Enrolments</h2>
+                            </div>
+                            <span className="course-count">{purchases.length} Orders</span>
+                        </div>
+
+                        {purchases.length === 0 ? (
+                            <div className="empty-state-small">
+                                <p>You haven't enrolled in any courses yet.</p>
+                            </div>
+                        ) : (
+                            <div className="enrolments-list">
+                                {purchases.map((order) => (
+                                    <div key={order.id} className="enrolment-item">
+                                        <div className="enrolment-info">
+                                            <h3>{order.course_title}</h3>
+                                            <div className="enrolment-meta">
+                                                <span>TXN: {order.transaction_id}</span>
+                                                <span>•</span>
+                                                <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <div className={`status-badge ${order.status}`}>
+                                            {order.status === 'success' ? 'Unlocked' : 'Pending Verification'}
+                                        </div>
+                                        {order.status === 'success' && (
+                                            <button className="btn-start-learning" onClick={() => navigate(`/courses/${order.course_id}`)}>
+                                                Start Learning
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Cart Section */}
                     <div className="cart-section">
@@ -114,85 +151,35 @@ const Dashboard = () => {
                                 <ShoppingCart size={28} />
                                 <h2>Your Cart</h2>
                             </div>
-                            <span className="course-count">{cartCourses.length} Courses</span>
                         </div>
 
                         {loading ? (
-                            <div className="loading-state">
-                                <div className="loader"></div>
-                                <p>Loading your cart...</p>
-                            </div>
+                            <div className="loading-state"><div className="loader"></div></div>
                         ) : cartCourses.length === 0 ? (
-                            <motion.div
-                                className="empty-cart"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                            >
+                            <div className="empty-cart">
                                 <ShoppingCart size={64} />
                                 <h3>Your cart is empty</h3>
-                                <p>Start adding courses to your cart and begin your learning journey!</p>
-                                <button className="btn-browse" onClick={() => navigate('/#courses')}>
-                                    Browse Courses
-                                </button>
-                            </motion.div>
+                                <button className="btn-browse" onClick={() => navigate('/courses')}>Browse Courses</button>
+                            </div>
                         ) : (
                             <div className="cart-grid">
-                                <AnimatePresence>
-                                    {cartCourses.map((course, index) => (
-                                        <motion.div
-                                            key={course.cartId}
-                                            className="cart-course-card"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, x: -100 }}
-                                            transition={{ delay: index * 0.1 }}
-                                            whileHover={{ y: -8 }}
-                                        >
-                                            <div className="course-image-dash">
-                                                <img src={course.thumbnail} alt={course.title} />
-                                                <div className="course-level-badge-dash">{course.level}</div>
-                                            </div>
-
-                                            <div className="course-content-dash">
-                                                <h3>{course.title}</h3>
-                                                <p className="course-desc-dash">{course.shortDesc}</p>
-
-                                                <div className="course-meta-dash">
-                                                    <div className="meta-item-dash">
-                                                        <Clock size={16} />
-                                                        <span>{course.duration}</span>
-                                                    </div>
-                                                    <div className="meta-item-dash">
-                                                        <BarChart3 size={16} />
-                                                        <span>{course.level}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="course-footer-dash">
-                                                    <div className="price-dash">₹{course.price.toLocaleString()}</div>
-                                                    <div className="course-actions-dash">
-                                                        <motion.button
-                                                            className="btn-buy-dash"
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => navigate('/contact')}
-                                                        >
-                                                            Buy Now
-                                                        </motion.button>
-                                                        <motion.button
-                                                            className="btn-remove"
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => handleRemoveFromCart(course.id)}
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </motion.button>
-                                                    </div>
+                                {cartCourses.map((course) => (
+                                    <div key={course.cartId} className="cart-course-card">
+                                        <div className="course-image-dash">
+                                            <img src={course.thumbnail} alt={course.title} />
+                                        </div>
+                                        <div className="course-content-dash">
+                                            <h3>{course.title}</h3>
+                                            <div className="course-footer-dash">
+                                                <div className="price-dash">₹{course.price.toLocaleString()}</div>
+                                                <div className="course-actions-dash">
+                                                    <button className="btn-buy-dash" onClick={() => navigate(`/checkout/${course.id}`)}>Buy Now</button>
+                                                    <button className="btn-remove" onClick={() => handleRemoveFromCart(course.id)}><Trash2 size={18} /></button>
                                                 </div>
                                             </div>
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>

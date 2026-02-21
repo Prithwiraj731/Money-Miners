@@ -19,10 +19,8 @@
     position: relative;
     overflow: hidden;
     font-family: 'Courier New', Courier, monospace;
-    /* Tech vibe */
 }
 
-/* Background Grid Effect */
 .admin-auth-bg {
     position: absolute;
     inset: 0;
@@ -44,7 +42,6 @@
     position: relative;
 }
 
-/* Corner Accents */
 .admin-login-card::before {
     content: '';
     position: absolute;
@@ -173,7 +170,6 @@
     color: #eee;
     font-family: 'Inter', sans-serif;
     padding-top: 120px;
-    /* Cleaner font for data */
 }
 
 .admin-topbar {
@@ -184,6 +180,11 @@
     justify-content: space-between;
     padding: 0 40px;
     background: rgba(10, 10, 12, 0.95);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .admin-brand {
@@ -286,7 +287,6 @@
     color: var(--neon-green);
 }
 
-/* Table Mockup */
 .admin-panel-section {
     background: var(--admin-panel);
     border: 1px solid #222;
@@ -333,6 +333,7 @@
     color: #ccc;
     border: 1px solid #333;
     border-radius: 4px;
+    text-transform: uppercase;
 }
 
 .status-badge.active {
@@ -343,4 +344,30 @@
 .status-badge.pending {
     border-color: #ffaa00;
     color: #ffaa00;
+}
+
+.status-badge.success {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.status-badge.failed {
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+}
+
+.admin-refresh-btn {
+    background: rgba(0, 255, 157, 0.1);
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.admin-refresh-btn:hover {
+    background: var(--neon-green);
+    color: #000;
 }

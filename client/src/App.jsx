@@ -22,6 +22,7 @@ import CookiePolicy from './pages/CookiePolicy';
 import RefundPolicy from './pages/RefundPolicy';
 import AllCourses from './pages/AllCourses';
 import FAQ from './pages/FAQ';
+import Checkout from './pages/Checkout';
 
 function Layout() {
   const location = useLocation();
@@ -44,6 +45,7 @@ function Layout() {
         <Route path="/courses" element={<AllCourses />} />
         <Route path="/courses/:courseId" element={<CoursePage />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/checkout/:courseId" element={<Checkout />} />
 
         {/* Legal Pages */}
         <Route path="/privacy" element={<PrivacyPolicy />} />
