@@ -50,7 +50,13 @@ const Checkout = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/api/purchases/submit`, {
+            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
+                ? '/api/purchases/submit'
+                : `${API_URL}/api/purchases/submit`;
+
+            console.log('Submitting purchase to:', targetUrl);
+
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,8 +74,7 @@ const Checkout = () => {
             });
 
             const data = await response.json();
-
-            if (!response.ok) throw new Error(data.message || 'Submission failed');
+            if (!response.ok) throw new Error(data.message || data.error || 'Submission failed');
 
             setMessage({ text: 'Order submitted successfully! Redirecting to dashboard...', type: 'success' });
             setTimeout(() => navigate('/dashboard'), 3000);
