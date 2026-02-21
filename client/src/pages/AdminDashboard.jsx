@@ -21,11 +21,7 @@ const AdminDashboard = () => {
 
     const fetchPurchases = async (token) => {
         try {
-            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/admin/purchases/all'
-                : `${API_URL}/api/admin/purchases/all`;
-
-            const response = await fetch(targetUrl, {
+            const response = await fetch(`${API_URL}/api/admin/purchases/all`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch purchases');
@@ -43,11 +39,7 @@ const AdminDashboard = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/admin/purchases/status'
-                : `${API_URL}/api/admin/purchases/status`;
-
-            const response = await fetch(targetUrl, {
+            const response = await fetch(`${API_URL}/api/admin/purchases/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

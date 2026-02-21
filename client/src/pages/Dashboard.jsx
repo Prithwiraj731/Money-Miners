@@ -34,11 +34,7 @@ const Dashboard = () => {
 
     const fetchCart = async (token) => {
         try {
-            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/cart'
-                : `${API_URL}/api/cart`;
-
-            const response = await fetch(targetUrl, {
+            const response = await fetch(`${API_URL}/api/cart`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch cart');
@@ -51,11 +47,7 @@ const Dashboard = () => {
 
     const fetchPurchases = async (token) => {
         try {
-            const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/purchases/user'
-                : `${API_URL}/api/purchases/user`;
-
-            const response = await fetch(targetUrl, {
+            const response = await fetch(`${API_URL}/api/purchases/user`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch purchases');
