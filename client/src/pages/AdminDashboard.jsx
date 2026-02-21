@@ -22,8 +22,8 @@ const AdminDashboard = () => {
     const fetchPurchases = async (token) => {
         try {
             const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/purchases/admin/all'
-                : `${API_URL}/api/purchases/admin/all`;
+                ? '/api/admin/purchases/all'
+                : `${API_URL}/api/admin/purchases/all`;
 
             const response = await fetch(targetUrl, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -44,8 +44,8 @@ const AdminDashboard = () => {
         try {
             const token = localStorage.getItem('adminToken');
             const targetUrl = API_URL.includes('localhost') && !window.location.hostname.includes('localhost')
-                ? '/api/purchases/admin/status'
-                : `${API_URL}/api/purchases/admin/status`;
+                ? '/api/admin/purchases/status'
+                : `${API_URL}/api/admin/purchases/status`;
 
             const response = await fetch(targetUrl, {
                 method: 'PUT',
